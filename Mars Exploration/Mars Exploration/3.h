@@ -1,6 +1,49 @@
-#pragma once
+
+/*
+This is a program that implements the queue abstract data type using a linked list.
+The queue is implemented as a chain of linked nodes that has two pointers,
+a frontPtr pointer for the front of the queue and a backPtr pointer for the back of the queue.
+*/
+
+/*
+
+The Node: item of type T and a "next" pointer
+-------------
+| item| next | --->
+-------------
+General Queue case:
+
+frontPtr																backPtr
+\											   						/
+\											  					   /
+------------- 	  ------------- 	  ------------- 	  -------------
+| item| next |--->| item| next |--->  | item| next |--->  | item| next |---> NULL
+------------- 	  ------------- 	  ------------- 	  -------------
+
+Empty Case:
+
+frontptr	 backptr
+\	 /
+\	/
+---- NULL ------
+
+
+Single Node Case:
+frontPtr	 backPtr
+\		/
+\	   /
+-----------
+|item| next| -->NULL
+-----------
+
+*/
+
+#ifndef LINKED_QUEUE_
+#define LINKED_QUEUE_
+
 #include "Node.h"
 #include "QueueADT.h"
+#include <vector>
 using namespace std;
 
 
@@ -20,7 +63,7 @@ public:
 	~LinkedQueue();
 
 	//copy constructor
-	LinkedQueue(const LinkedQueue<T>& LQ);
+	LinkedQueue(const LinkedQueue<T> & LQ);
 };
 /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -147,7 +190,7 @@ Output: none
 */
 
 template <typename T>
-LinkedQueue<T>::LinkedQueue(const LinkedQueue<T>& LQ)
+LinkedQueue<T>::LinkedQueue(const LinkedQueue<T> & LQ)
 {
 	Node<T>* NodePtr = LQ.frontPtr;
 	if (!NodePtr) //LQ is empty
@@ -170,3 +213,5 @@ LinkedQueue<T>::LinkedQueue(const LinkedQueue<T>& LQ)
 		NodePtr = NodePtr->getNext();
 	}
 }
+
+#endif

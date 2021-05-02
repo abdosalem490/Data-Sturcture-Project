@@ -144,6 +144,7 @@
   <ItemGroup>
     <ClInclude Include="LinkedQueue.h" />
     <ClInclude Include="Node.h" />
+    <ClInclude Include="Pair.h" />
     <ClInclude Include="QueueADT.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

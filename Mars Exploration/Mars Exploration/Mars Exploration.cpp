@@ -3,9 +3,14 @@
 
 #include <iostream>
 #include "LinkedQueue.h"
+//#include "PriorityQueue.h"
 using namespace std;
 
 int main()
 {
     cout << "Hello World!\n";
+    LinkedQueue<int> x;
+    //priorityQueue<int, int> y;
+    //Pair<int, int > z;
+
 }
