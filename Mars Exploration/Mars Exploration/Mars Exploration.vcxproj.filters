@@ -18,6 +18,21 @@
     <ClCompile Include="Mars Exploration.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MarsStation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Mission.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Emergency_missions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Mountainous_missions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Polar_missions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Node.h">
@@ -29,7 +44,28 @@
     <ClInclude Include="LinkedQueue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MarsStation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mission.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Emergency_missions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mountainous_missions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Polar_missions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="Pair.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PriorityQueueADT.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LinkedPriorityQueue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

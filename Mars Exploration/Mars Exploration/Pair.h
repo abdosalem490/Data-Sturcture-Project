@@ -1,6 +1,6 @@
 #pragma once
 #include "Node.h"
-template<class T* , class M>
+template<class T , class M>
 class Pair
 {
 private:
@@ -18,7 +18,7 @@ public:
 		ptr = nullptr;
 		this->priority = priority;
 	}
-	T* getPointer() const
+	T* getPair() const
 	{
 		return this->ptr;
 	}
