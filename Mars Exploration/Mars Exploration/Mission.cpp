@@ -1,13 +1,13 @@
 #include "Mission.h"
-Mission::Mission(int id, int Formulation_Day, int Execution_Days, int Significance, int Mission_Duration, double Target_Location, int Waiting_Days, int Completion_Day)
+Mission::Mission(int id, int Formulation_Day, int Significance, int Mission_Duration, double Target_Location)
 {
 	set_ID(id);
-	set_Completion_Day(Formulation_Day);
-	set_Execution_Days(Waiting_Days);
-	set_Formulation_Day(Execution_Days);
-	set_Mission_Duration(Completion_Day);
+	set_Completion_Day(-1);
+	set_Execution_Days(-1);
+	set_Formulation_Day(Formulation_Day);
+	set_Mission_Duration(Mission_Duration);
 	set_Significance(Significance);
-	set_Waiting_Days(Mission_Duration);
+	set_Waiting_Days(-1);
 	set_Target_Location(Target_Location);
 }
 void Mission::set_ID(int id)

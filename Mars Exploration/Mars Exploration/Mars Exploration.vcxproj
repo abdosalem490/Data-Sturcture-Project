@@ -145,6 +145,7 @@
     <ClCompile Include="Mission.cpp" />
     <ClCompile Include="Mountainous_missions.cpp" />
     <ClCompile Include="Polar_missions.cpp" />
+    <ClCompile Include="Rovers\ROVER.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Emergency_missions.h" />
@@ -158,6 +159,7 @@
     <ClInclude Include="Polar_missions.h" />
     <ClInclude Include="PriorityQueueADT.h" />
     <ClInclude Include="QueueADT.h" />
+    <ClInclude Include="Rovers\ROVER.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

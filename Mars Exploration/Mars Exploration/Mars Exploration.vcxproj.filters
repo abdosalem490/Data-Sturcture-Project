@@ -33,6 +33,9 @@
     <ClCompile Include="Polar_missions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Rovers\ROVER.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Node.h">
@@ -66,6 +69,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="LinkedPriorityQueue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Rovers\ROVER.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
