@@ -139,18 +139,26 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CancellationEvent.cpp" />
     <ClCompile Include="Emergency_missions.cpp" />
+    <ClCompile Include="Event.cpp" />
+    <ClCompile Include="FormulationEvent.cpp" />
     <ClCompile Include="Mars Exploration.cpp" />
     <ClCompile Include="MarsStation.cpp" />
     <ClCompile Include="Mission.cpp" />
     <ClCompile Include="Mountainous_missions.cpp" />
     <ClCompile Include="Polar_missions.cpp" />
+    <ClCompile Include="PromotionEvent.cpp" />
     <ClCompile Include="Rovers\ROVER.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CancellationEvent.h" />
     <ClInclude Include="Emergency_missions.h" />
+    <ClInclude Include="Event.h" />
+    <ClInclude Include="FormulationEvent.h" />
     <ClInclude Include="LinkedPriorityQueue.h" />
     <ClInclude Include="LinkedQueue.h" />
+    <ClInclude Include="List_Interface.h" />
     <ClInclude Include="MarsStation.h" />
     <ClInclude Include="Mission.h" />
     <ClInclude Include="Mountainous_missions.h" />
@@ -158,8 +166,10 @@
     <ClInclude Include="Pair.h" />
     <ClInclude Include="Polar_missions.h" />
     <ClInclude Include="PriorityQueueADT.h" />
+    <ClInclude Include="PromotionEvent.h" />
     <ClInclude Include="QueueADT.h" />
     <ClInclude Include="Rovers\ROVER.h" />
+    <ClInclude Include="SortedList.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,7 +1,7 @@
 #ifndef _ROVER_H
 #define _ROVER_H
 #include <string>
-
+#include "../Mission.h"
 class Rover {
 
 public:
@@ -32,7 +32,7 @@ public:
 
 	// in the following : replace int pointer with a mission pointer
 	// when the classes are ready.
-	void assignMission(int*);
+	void assignMission(Mission*);
 
 
 	// This may be needed or may be not, depending on how we further implement the project.
@@ -51,7 +51,7 @@ private:
 	int failedMissions;
 
 	// replace the int pointer with a mission pointer!
-	int* assignedMission;
+	Mission* assignedMission;
 
 
 };

@@ -141,7 +141,7 @@ bool LinkedpriorityQueue<T, M>::isFull()
 	Node<Pair<T, M>>* t = new Node<Pair<T, M>>();
 	if (t)
 	{
-		return true;
+		return false;
 	}
-	return false;
+	return true;
 }

@@ -10,7 +10,71 @@ using namespace std;
 MarsStation::MarsStation() {
     LoadInputFile();
 }
-
+void MarsStation::Cancel_mission(int id)
+{
+    LinkedQueue <Mountainous_missions*> temp;
+    while (available_Mountaneous_MissionList.isEmpty() == false)
+    {
+        Mountainous_missions* t;
+        available_Mountaneous_MissionList.dequeue(t);
+        int id_temp = t->get_ID();
+        if (id_temp != id)
+        {
+            temp.enqueue(t);
+        }
+    }
+    while (temp.isEmpty() == false)
+    {
+        Mountainous_missions* t;
+        temp.dequeue(t);
+        available_Mountaneous_MissionList.enqueue(t);
+    }
+}
+void MarsStation::Promote_mission(int id)
+{
+    LinkedQueue <Mountainous_missions*> temp;
+    while (available_Mountaneous_MissionList.isEmpty() == false)
+    {
+        Mountainous_missions* t;
+        available_Mountaneous_MissionList.dequeue(t);
+        int id_temp = t->get_ID();
+        if (id_temp == id)
+        {
+            Emergency_missions* n_t = new Emergency_missions(t->get_ID(),t->get_Formulation_Day(),t->get_Significance(),t->get_Mission_Duration(),t->get_Target_Location());
+            Add_mission(n_t);
+        }
+        else
+        {
+            temp.enqueue(t);
+        }
+    }
+    while (temp.isEmpty() == false)
+    {
+        Mountainous_missions* t;
+        temp.dequeue(t);
+        available_Mountaneous_MissionList.enqueue(t);
+    }
+}
+void MarsStation::Add_mission(Mission* ptr)
+{
+    Emergency_missions* EM = dynamic_cast<Emergency_missions*>(ptr);
+    Mountainous_missions* MO = dynamic_cast<Mountainous_missions*>(ptr);
+    Polar_missions* PO = dynamic_cast<Polar_missions*>(ptr);
+    if (EM != NULL)
+    {
+        int pr = EM->get_priority();
+        Pair<Emergency_missions*, int> p(EM,pr);
+        available_Emergency_MissionList.enqueue(p);
+    }
+    else if (MO != NULL)
+    {
+        available_Mountaneous_MissionList.enqueue(MO);
+    }
+    else if (PO != NULL)
+    {
+        available_Polar_MissionList.enqueue(PO);
+    }
+}
 void MarsStation::LoadInputFile() {
 
     ifstream fileToLoad;

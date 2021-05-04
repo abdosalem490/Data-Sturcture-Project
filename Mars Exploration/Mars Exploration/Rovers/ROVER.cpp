@@ -8,7 +8,7 @@ Rover::Rover(std::string argType, double argSpeed = 0) {
 
 }
 
-void Rover::assignMission(int* a) {
+void Rover::assignMission(Mission* a) {
 	assignedMission = a;
 }
 

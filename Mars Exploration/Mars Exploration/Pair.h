@@ -4,23 +4,21 @@ template<class T , class M>
 class Pair
 {
 private:
-	T* ptr;
+	T value;
 	M priority;
 public:
 	Pair()
 	{
-		this->ptr = nullptr;
 		priority = -1;
 	}
-	Pair(T* &ptr, M priority)
+	Pair(const T & v, const M & priority)
 	{
-		this->ptr = ptr;
-		ptr = nullptr;
+		this->value = v;
 		this->priority = priority;
 	}
-	T* getPair() const
+	T get_value() const
 	{
-		return this->ptr;
+		return this->value;
 	}
 	M getPriority() const
 	{
@@ -28,6 +26,21 @@ public:
 	}	
 	~Pair()
 	{
-		delete ptr;
+	}
+	bool operator <(const Pair& p)
+	{
+		if (priority < p.getPriority())
+		{
+			return true;
+		}
+		return false;
+	}
+	bool operator > (const Pair& p)
+	{
+		if (priority > p.getPriority())
+		{
+			return true;
+		}
+		return false;
 	}
 };
