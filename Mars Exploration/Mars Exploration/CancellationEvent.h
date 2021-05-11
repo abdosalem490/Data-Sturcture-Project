@@ -1,5 +1,8 @@
 #pragma once
-#include "Event.h"
+#include "MarsStation.h"
+class MarsStation;
+class Event;
+
 class CancellationEvent : public Event
 {
 

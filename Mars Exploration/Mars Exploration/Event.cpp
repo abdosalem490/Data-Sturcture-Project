@@ -12,3 +12,9 @@ Event::Event(int ID, int evenDay, MarsStation* ptr)
 	this->eventDay = evenDay;
 	this->Pmanger = ptr;
 }
+
+int Event::getEventDay()
+{
+	return this->eventDay;
+}
+

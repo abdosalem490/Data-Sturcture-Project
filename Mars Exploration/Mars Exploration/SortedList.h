@@ -1,6 +1,7 @@
 #pragma once
 #include"List_Interface.h"
 #include "Node.h"
+#include <iostream>
 using namespace std;
 
 template< class ItemType>
@@ -10,14 +11,35 @@ private:
 	Node<ItemType>* headPtr; 
 
 	Node<ItemType>* getNodeBefore(const ItemType& anEntry) const {
-		Node<ItemType>* curPtr = headPtr;
-		Node<ItemType>* prevPtr = nullptr;
-		while ((curPtr != nullptr) && (anEntry > curPtr->getItem()))
+		Node<ItemType>* ptr;
+		if (headPtr != nullptr)
+			ptr = headPtr->getNext();
+		else
+			ptr = nullptr;
+		Node<ItemType>* prev = headPtr;
+		if (headPtr == nullptr)
+			return nullptr;
+		if (headPtr->getNext() == nullptr)
 		{
-			prevPtr = curPtr;
-			curPtr = curPtr->getNext();
-		} // end while
-		return prevPtr;
+			if (headPtr->getItem() == anEntry)
+				return nullptr;
+			else return nullptr;
+		}
+		if (prev->getItem() == anEntry)
+		{
+			return nullptr;
+		}
+		while (ptr != nullptr)
+		{
+			if (ptr->getItem() == anEntry)
+			{
+				return prev;
+			}
+			prev = ptr;
+			ptr = ptr->getNext();
+
+		}
+		return nullptr;
 	}
 	
 	Node<ItemType>* getNodeAt(int position) const {
@@ -178,12 +200,13 @@ public:
 		Node<ItemType>* ptr = headPtr;
 		while (ptr != nullptr)
 		{
-			count++;
 			if (count == position)
 				break;
+			count++;
 			ptr = ptr->getNext();
 		}
 		return ptr->getItem();
+		
 	}//throw(PrecondViolatedExcep);
 
 	void PrintList() const

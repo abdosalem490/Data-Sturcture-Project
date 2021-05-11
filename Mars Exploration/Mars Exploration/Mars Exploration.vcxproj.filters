@@ -104,5 +104,14 @@
     <ClInclude Include="SortedList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="EmergencyRovers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MountaneousRover.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PolarRovers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
