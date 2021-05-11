@@ -1,7 +1,10 @@
 #pragma once
-#include "Event.h"
-class PromotionEvent : public Event
-{
+#include "MarsStation.h"
+
+class MarsStation;
+class Event;
+
+class PromotionEvent : public Event {
 public:
 	PromotionEvent();
 

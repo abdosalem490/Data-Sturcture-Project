@@ -153,6 +153,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CancellationEvent.h" />
+    <ClInclude Include="EmergencyRovers.h" />
     <ClInclude Include="Emergency_missions.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="FormulationEvent.h" />
@@ -162,8 +163,10 @@
     <ClInclude Include="MarsStation.h" />
     <ClInclude Include="Mission.h" />
     <ClInclude Include="Mountainous_missions.h" />
+    <ClInclude Include="MountaneousRover.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="Pair.h" />
+    <ClInclude Include="PolarRovers.h" />
     <ClInclude Include="Polar_missions.h" />
     <ClInclude Include="PriorityQueueADT.h" />
     <ClInclude Include="PromotionEvent.h" />

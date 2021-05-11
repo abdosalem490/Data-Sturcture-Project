@@ -16,6 +16,11 @@ public:
 		this->value = v;
 		this->priority = priority;
 	}
+	Pair(const Pair& p)
+	{
+		priority = p.getPriority();
+		value = p.get_value();
+	}
 	T get_value() const
 	{
 		return this->value;
@@ -27,7 +32,15 @@ public:
 	~Pair()
 	{
 	}
-	bool operator <(const Pair& p)
+	void setValue(T value)
+	{
+		this->value = value;
+	}
+	void setPriority(M priority)
+	{
+		this->priority = priority;
+	}
+	bool operator < (const Pair& p)
 	{
 		if (priority < p.getPriority())
 		{
@@ -42,5 +55,16 @@ public:
 			return true;
 		}
 		return false;
+	}
+	
+	bool operator == (const Pair& p)
+	{
+		return (priority == p.getPriority());
+	}
+	void operator =(const Pair& p)
+	{
+		this->value = p.get_value();
+		this->priority = p.getPriority();
+		
 	}
 };

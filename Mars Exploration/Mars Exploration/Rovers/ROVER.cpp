@@ -5,11 +5,32 @@ Rover::Rover(std::string argType, double argSpeed = 0) {
 	assignMission(nullptr);
 	setSpeed(argSpeed);
 	setType(argType);
+	distanceTravelled = 0;
 
 }
 
 void Rover::assignMission(Mission* a) {
 	assignedMission = a;
+}
+
+void Rover::setdaysInCheckup(int d)
+{
+	this->daysInCheckup = d;
+}
+
+int Rover::getdaysInCheckup()
+{
+	return this->getdaysInCheckup();
+}
+
+void Rover::setdaysInMaintenance(int d)
+{
+	this->daysInMaintenance = d;
+}
+
+int Rover::getdaysInMaintenance()
+{
+	return this->daysInMaintenance;
 }
 
 void Rover::setSpeed(double argSpeed) {
@@ -49,6 +70,13 @@ std::string Rover::getType() const {
 }
 void Rover::setType(std::string t) {
 	type = t;
+}
+
+double Rover::getDistanceTravelled() const {
+	return distanceTravelled;
+}
+void Rover::incrementDistanceTravelled(double amount) {
+	distanceTravelled += amount;
 }
 
 int Rover::getStatus() const {
