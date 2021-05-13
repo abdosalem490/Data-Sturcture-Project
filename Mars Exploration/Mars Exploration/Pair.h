@@ -10,6 +10,7 @@ public:
 	Pair()
 	{
 		priority = -1;
+		value = 0;
 	}
 	Pair(const T & v, const M & priority)
 	{

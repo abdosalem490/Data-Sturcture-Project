@@ -43,6 +43,10 @@ public:
     void increment_Days();
     void setToday(int d);
     int getToday();
+
+    // Assigning missions to rover
+    void Assign_mission();
+
 private:
     const std::string WHITESPACE = " \n\r\t\f\v";
 
