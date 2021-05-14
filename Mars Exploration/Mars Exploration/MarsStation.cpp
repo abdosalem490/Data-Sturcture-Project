@@ -44,7 +44,7 @@ void MarsStation::Assign_mission()
 			// assigning mission to rover
 			ptr_rover->assignMission(ptr_mission);
 			// assigning Execution_Days
-			int days_Execution = (int)round(((2 * ptr_mission->get_Target_Location()) / ptr_rover->getSpeed()) + ptr_mission->get_Mission_Duration());
+			int days_Execution = (int)ceil(((2 * ptr_mission->get_Target_Location()) / ptr_rover->getSpeed()) + ptr_mission->get_Mission_Duration());
 			ptr_mission->set_Execution_Days(days_Execution);
 			// assigning completion days
 			int days_completion = ptr_mission->get_Execution_Days() + ptr_mission->get_Waiting_Days() + ptr_mission->get_Formulation_Day();
@@ -66,7 +66,7 @@ void MarsStation::Assign_mission()
 			// assigning mission to rover
 			ptr_rover->assignMission(ptr_mission);
 			// assigning Execution_Days
-			int days_Execution = (int)round(((2 * ptr_mission->get_Target_Location()) / ptr_rover->getSpeed()) + ptr_mission->get_Mission_Duration());
+			int days_Execution = (int)ceil(((2 * ptr_mission->get_Target_Location()) / ptr_rover->getSpeed()) + ptr_mission->get_Mission_Duration());
 			ptr_mission->set_Execution_Days(days_Execution);
 			// assigning completion days
 			int days_completion = ptr_mission->get_Execution_Days() + ptr_mission->get_Waiting_Days() + ptr_mission->get_Formulation_Day();
@@ -88,7 +88,7 @@ void MarsStation::Assign_mission()
 			// assigning mission to rover
 			ptr_rover->assignMission(ptr_mission);
 			// assigning Execution_Days
-			int days_Execution = (int)round(((2 * ptr_mission->get_Target_Location()) / ptr_rover->getSpeed()) + ptr_mission->get_Mission_Duration());
+			int days_Execution = (int)ceil(((2 * ptr_mission->get_Target_Location()) / ptr_rover->getSpeed()) + ptr_mission->get_Mission_Duration());
 			ptr_mission->set_Execution_Days(days_Execution);
 			// assigning completion days
 			int days_completion = ptr_mission->get_Execution_Days() + ptr_mission->get_Waiting_Days() + ptr_mission->get_Formulation_Day();
@@ -121,7 +121,7 @@ void MarsStation::Assign_mission()
 			// assigning mission to rover
 			ptr_rover->assignMission(ptr_mission);
 			// assigning Execution_Days
-			int days_Execution = (int)round(((2 * ptr_mission->get_Target_Location()) / ptr_rover->getSpeed()) + ptr_mission->get_Mission_Duration());
+			int days_Execution = (int)ceil(((2 * ptr_mission->get_Target_Location()) / ptr_rover->getSpeed()) + ptr_mission->get_Mission_Duration());
 			ptr_mission->set_Execution_Days(days_Execution);
 			// assigning completion days
 			int days_completion = ptr_mission->get_Execution_Days() + ptr_mission->get_Waiting_Days() + ptr_mission->get_Formulation_Day();
@@ -154,7 +154,7 @@ void MarsStation::Assign_mission()
 			// assigning mission to rover
 			ptr_rover->assignMission(ptr_mission);
 			// assigning Execution_Days
-			int days_Execution = (int)round(((2 * ptr_mission->get_Target_Location()) / ptr_rover->getSpeed()) + ptr_mission->get_Mission_Duration());
+			int days_Execution = (int)ceil(((2 * ptr_mission->get_Target_Location()) / ptr_rover->getSpeed()) + ptr_mission->get_Mission_Duration());
 			ptr_mission->set_Execution_Days(days_Execution);
 			// assigning completion days
 			int days_completion = ptr_mission->get_Execution_Days() + ptr_mission->get_Waiting_Days() + ptr_mission->get_Formulation_Day();
@@ -187,7 +187,7 @@ void MarsStation::Assign_mission()
 			// assigning mission to rover
 			ptr_rover->assignMission(ptr_mission);
 			// assigning Execution_Days
-			int days_Execution = (int)round(((2 * ptr_mission->get_Target_Location()) / ptr_rover->getSpeed()) + ptr_mission->get_Mission_Duration());
+			int days_Execution = (int)ceil(((2 * ptr_mission->get_Target_Location()) / ptr_rover->getSpeed()) + ptr_mission->get_Mission_Duration());
 			ptr_mission->set_Execution_Days(days_Execution);
 			// assigning completion days
 			int days_completion = ptr_mission->get_Execution_Days() + ptr_mission->get_Waiting_Days() + ptr_mission->get_Formulation_Day();
@@ -222,7 +222,7 @@ void MarsStation::Assign_mission()
 			// assigning mission to rover
 			ptr_rover->assignMission(ptr_mission);
 			// assigning Execution_Days
-			int days_Execution = (int)round(((2 * ptr_mission->get_Target_Location()) / ptr_rover->getSpeed()) + ptr_mission->get_Mission_Duration());
+			int days_Execution = (int)ceil(((2 * ptr_mission->get_Target_Location()) / ptr_rover->getSpeed()) + ptr_mission->get_Mission_Duration());
 			ptr_mission->set_Execution_Days(days_Execution);
 			// assigning completion days
 			int days_completion = ptr_mission->get_Execution_Days() + ptr_mission->get_Waiting_Days() + ptr_mission->get_Formulation_Day();
@@ -244,7 +244,7 @@ void MarsStation::Assign_mission()
 			// assigning mission to rover
 			ptr_rover->assignMission(ptr_mission);
 			// assigning Execution_Days
-			int days_Execution = (int)round(((2 * ptr_mission->get_Target_Location()) / ptr_rover->getSpeed()) + ptr_mission->get_Mission_Duration());
+			int days_Execution = (int)ceil(((2 * ptr_mission->get_Target_Location()) / ptr_rover->getSpeed()) + ptr_mission->get_Mission_Duration());
 			ptr_mission->set_Execution_Days(days_Execution);
 			// assigning completion days
 			int days_completion = ptr_mission->get_Execution_Days() + ptr_mission->get_Waiting_Days() + ptr_mission->get_Formulation_Day();
@@ -277,7 +277,7 @@ void MarsStation::Assign_mission()
 			// assigning mission to rover
 			ptr_rover->assignMission(ptr_mission);
 			// assigning Execution_Days
-			int days_Execution = (int)round(((2 * ptr_mission->get_Target_Location()) / ptr_rover->getSpeed()) + ptr_mission->get_Mission_Duration());
+			int days_Execution = (int)ceil(((2 * ptr_mission->get_Target_Location()) / ptr_rover->getSpeed()) + ptr_mission->get_Mission_Duration());
 			ptr_mission->set_Execution_Days(days_Execution);
 			// assigning completion days
 			int days_completion = ptr_mission->get_Execution_Days() + ptr_mission->get_Waiting_Days() + ptr_mission->get_Formulation_Day();
@@ -310,7 +310,7 @@ void MarsStation::Assign_mission()
 			// assigning mission to rover
 			ptr_rover->assignMission(ptr_mission);
 			// assigning Execution_Days
-			int days_Execution = (int)round(((2 * ptr_mission->get_Target_Location()) / ptr_rover->getSpeed()) + ptr_mission->get_Mission_Duration());
+			int days_Execution = (int)ceil(((2 * ptr_mission->get_Target_Location()) / ptr_rover->getSpeed()) + ptr_mission->get_Mission_Duration());
 			ptr_mission->set_Execution_Days(days_Execution);
 			// assigning completion days
 			int days_completion = ptr_mission->get_Execution_Days() + ptr_mission->get_Waiting_Days() + ptr_mission->get_Formulation_Day();
@@ -345,7 +345,7 @@ void MarsStation::Assign_mission()
 			// assigning mission to rover
 			ptr_rover->assignMission(ptr_mission);
 			// assigning Execution_Days
-			int days_Execution = (int)round(((2 * ptr_mission->get_Target_Location()) / ptr_rover->getSpeed()) + ptr_mission->get_Mission_Duration());
+			int days_Execution = (int)ceil(((2 * ptr_mission->get_Target_Location()) / ptr_rover->getSpeed()) + ptr_mission->get_Mission_Duration());
 			ptr_mission->set_Execution_Days(days_Execution);
 			// assigning completion days
 			int days_completion = ptr_mission->get_Execution_Days() + ptr_mission->get_Waiting_Days() + ptr_mission->get_Formulation_Day();
@@ -379,7 +379,7 @@ void MarsStation::Assign_mission()
 			// assigning mission to rover
 			ptr_rover->assignMission(ptr_mission);
 			// assigning Execution_Days
-			int days_Execution = (int)round(((2 * ptr_mission->get_Target_Location()) / ptr_rover->getSpeed()) + ptr_mission->get_Mission_Duration());
+			int days_Execution = (int)ceil(((2 * ptr_mission->get_Target_Location()) / ptr_rover->getSpeed()) + ptr_mission->get_Mission_Duration());
 			ptr_mission->set_Execution_Days(days_Execution);
 			// assigning completion days
 			int days_completion = ptr_mission->get_Execution_Days() + ptr_mission->get_Waiting_Days() + ptr_mission->get_Formulation_Day();
