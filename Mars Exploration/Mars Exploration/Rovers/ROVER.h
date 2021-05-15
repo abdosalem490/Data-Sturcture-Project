@@ -7,7 +7,7 @@ class Rover {
 public:
 
 
-	Rover(std::string, double);
+	Rover( double);
 
 	// Setters and Getters for speed.
 	virtual void setSpeed(double);
@@ -27,8 +27,6 @@ public:
 	virtual int getFM() const;
 	virtual void incrementFM();
 
-	virtual std::string getType() const;
-	virtual void setType(std::string);
 
 	// in the following : replace int pointer with a mission pointer
 	// when the classes are ready.
@@ -45,19 +43,29 @@ public:
 	// This may be needed or may be not, depending on how we further implement the project.
 	virtual int getStatus() const;
 
-	double getDistanceTravelled() const;
-	void incrementDistanceTravelled(double amount);
+	virtual double getDistanceTravelled() const;
+	virtual void incrementDistanceTravelled(double amount);
+
+	//getters and setters to check for the comleteness of Maintenance
+	virtual void setFinishedMaintenance(bool value);
+	virtual bool getFinishedMaintenance();
+
+	//getters and setters for maintenanceDuration
+	virtual void setMaintenanceDuration(int d);
+	virtual int getMaintenanceDuration();
 
 private:
 
 	double speed;
-	std::string type;
+	
 	int checkupDuration;
-
+	int maintenanceDuration;
 	double distanceTravelled;
 
 	int daysInCheckup = 0 ;
 	int daysInMaintenance = 0;
+
+	bool finishedMaintenance = true;
 
 	int completedMissions;
 	// For bonus, to store the number of failed missions that were assigned to this rover.

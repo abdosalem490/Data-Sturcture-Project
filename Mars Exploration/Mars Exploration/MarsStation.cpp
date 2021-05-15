@@ -14,7 +14,6 @@ using namespace std;
 MarsStation::MarsStation() {
 	LoadInputFile();
 }
-
 // Assigning missions to rover
 void MarsStation::Assign_mission()
 {
@@ -109,15 +108,9 @@ void MarsStation::Assign_mission()
 			ptr_rover = pair_rover.get_value();
 			// reducing speed to half
 			ptr_rover->setSpeed((ptr_rover->getSpeed() / 2));
-			// was at maintenance
-			// 
-			//    */////////////////////////////////////////////////////////// 
-			// 
-			//                                                                    was in maintanence = true;
-			// 
-			// 
-			//   ////////////////////////////////////////////////////////////
-			// 
+			//define that the rover didn't finish maintenance
+			ptr_rover->setFinishedMaintenance(false);
+			ptr_rover->setdaysInMaintenance(ptr_rover->getMaintenanceDuration());
 			// assigning mission to rover
 			ptr_rover->assignMission(ptr_mission);
 			// assigning Execution_Days
@@ -142,15 +135,9 @@ void MarsStation::Assign_mission()
 			ptr_rover = pair_rover.get_value();
 			// reducing speed to half
 			ptr_rover->setSpeed((ptr_rover->getSpeed() / 2));
-			// was at maintenance
-			// 
-			//    */////////////////////////////////////////////////////////// 
-			// 
-			//                                                                    was in maintanence = true;
-			// 
-			// 
-			//   ////////////////////////////////////////////////////////////
-			// 
+			//define that the rover didn't finish maintenance
+			ptr_rover->setFinishedMaintenance(false);
+			ptr_rover->setdaysInMaintenance(ptr_rover->getMaintenanceDuration());
 			// assigning mission to rover
 			ptr_rover->assignMission(ptr_mission);
 			// assigning Execution_Days
@@ -175,15 +162,9 @@ void MarsStation::Assign_mission()
 			ptr_rover = pair_rover.get_value();
 			// reducing speed to half
 			ptr_rover->setSpeed((ptr_rover->getSpeed() / 2));
-			// was at maintenance
-			// 
-			//    */////////////////////////////////////////////////////////// 
-			// 
-			//                                                                    was in maintanence = true;
-			// 
-			// 
-			//   ////////////////////////////////////////////////////////////
-			// 
+			//define that the rover didn't finish maintenance
+			ptr_rover->setFinishedMaintenance(false);
+			ptr_rover->setdaysInMaintenance(ptr_rover->getMaintenanceDuration());
 			// assigning mission to rover
 			ptr_rover->assignMission(ptr_mission);
 			// assigning Execution_Days
@@ -265,15 +246,9 @@ void MarsStation::Assign_mission()
 			ptr_rover = pair_rover.get_value();
 			// reducing speed to half
 			ptr_rover->setSpeed((ptr_rover->getSpeed() / 2));
-			// was at maintenance
-			// 
-			//    */////////////////////////////////////////////////////////// 
-			// 
-			//                                                                    was in maintanence = true;
-			// 
-			// 
-			//   ////////////////////////////////////////////////////////////
-			// 
+			//define that the rover didn't finish maintenance
+			ptr_rover->setFinishedMaintenance(false);
+			ptr_rover->setdaysInMaintenance(ptr_rover->getMaintenanceDuration());
 			// assigning mission to rover
 			ptr_rover->assignMission(ptr_mission);
 			// assigning Execution_Days
@@ -298,15 +273,9 @@ void MarsStation::Assign_mission()
 			ptr_rover = pair_rover.get_value();
 			// reducing speed to half
 			ptr_rover->setSpeed((ptr_rover->getSpeed() / 2));
-			// was at maintenance
-			// 
-			//    */////////////////////////////////////////////////////////// 
-			// 
-			//                                                                    was in maintanence = true;
-			// 
-			// 
-			//   ////////////////////////////////////////////////////////////
-			// 
+			//define that the rover didn't finish maintenance
+			ptr_rover->setFinishedMaintenance(false);
+			ptr_rover->setdaysInMaintenance(ptr_rover->getMaintenanceDuration());
 			// assigning mission to rover
 			ptr_rover->assignMission(ptr_mission);
 			// assigning Execution_Days
@@ -367,15 +336,9 @@ void MarsStation::Assign_mission()
 			ptr_rover = pair_rover.get_value();
 			// reducing speed to half
 			ptr_rover->setSpeed((ptr_rover->getSpeed() / 2));
-			// was at maintenance
-			// 
-			//    */////////////////////////////////////////////////////////// 
-			// 
-			//                                                                    was in maintanence = true;
-			// 
-			// 
-			//   ////////////////////////////////////////////////////////////
-			// 
+			//define that the rover didn't finish maintenance
+			ptr_rover->setFinishedMaintenance(false);
+			ptr_rover->setdaysInMaintenance(ptr_rover->getMaintenanceDuration());
 			// assigning mission to rover
 			ptr_rover->assignMission(ptr_mission);
 			// assigning Execution_Days
@@ -397,7 +360,6 @@ void MarsStation::Assign_mission()
 		}
 	}
 }
-
 void MarsStation::Cancel_mission(int id)
 {
 	LinkedQueue <Mountainous_missions*> temp;
@@ -467,7 +429,7 @@ void MarsStation::check_For_Completed_Rovers_Missions()
 				temp /= 10;
 			}
 			priority = priority1_CompeletionDays * numOfDigitsInExecutionDays + priority2_ExecutionDays;
-			Pair<Mission*, int>p1_new(m, -1 * priority);
+			Pair<Mission*, int>p1_new(m, priority);
 			completed_MissionsList.insertSorted(p1_new);
 
 			// Incrementing the number of completed missions done by this rover.
@@ -482,6 +444,30 @@ void MarsStation::check_For_Completed_Rovers_Missions()
 				r->setdaysInCheckup(r->getCheckupD());
 				Pair<Rover*, int>p2_new(r, r->getdaysInCheckup());
 				rovers_InCheckup.insertSorted(p2_new);
+			}
+			else if (!r->getFinishedMaintenance())
+			{
+				if (dynamic_cast<EmergencyRovers*>(r))
+				{
+					EmergencyRovers* n_r = dynamic_cast<EmergencyRovers*>(r);
+					n_r->setSpeed(n_r->getSpeed() * 2);
+					Pair< EmergencyRovers*, int> p(n_r, n_r->getdaysInMaintenance());
+					emergency_Rovers_InMaintenance.insertSorted(p);
+				}
+				else if (dynamic_cast<MountaneousRovers*>(r))
+				{
+					MountaneousRovers* n_r = dynamic_cast<MountaneousRovers*>(r);
+					n_r->setSpeed(n_r->getSpeed() * 2);
+					Pair< MountaneousRovers*, int> p(n_r,n_r-> getdaysInMaintenance());
+					mountaneous_Rovers_InMaintenance.insertSorted(p);
+				}
+				else if (dynamic_cast<PolarRovers*>(r))
+				{
+					PolarRovers* n_r = dynamic_cast<PolarRovers*>(r);
+					n_r->setSpeed(n_r->getSpeed() * 2);
+					Pair< PolarRovers*, int> p(n_r,n_r->getdaysInMaintenance());
+					Polar_Rovers_InMaintenance.insertSorted(p);
+				}
 			}
 			else
 			{
@@ -517,7 +503,7 @@ void MarsStation::check_For_Failed_Missions()
 {
 	srand((unsigned)time(0));
 	int random = rand();
-	random = (random % inExecution_MissionsList.getLength()) + 1;
+	random = (random % (inExecution_MissionsList.getLength())*20) + 1;
 	int i = 0;
 	Mission* m;
 	Rover* r;
@@ -532,6 +518,8 @@ void MarsStation::check_For_Failed_Missions()
 			r->incrementFM();
 			inExecution_MissionsList.remove(i);
 			rovers_InMission.remove(i);
+			m->set_Completion_Day(0);
+			m->set_Execution_Days(0);
 			if (dynamic_cast<Emergency_missions*>(m))
 			{
 				Emergency_missions* n_m = dynamic_cast<Emergency_missions*>(m);
@@ -553,6 +541,30 @@ void MarsStation::check_For_Failed_Missions()
 				r->setdaysInCheckup(r->getCheckupD());
 				Pair<Rover*, int> p(r, r->getdaysInCheckup());
 				rovers_InCheckup.insertSorted(p);
+			}
+			else if (!r->getFinishedMaintenance())
+			{
+				if (dynamic_cast<EmergencyRovers*>(r))
+				{
+					EmergencyRovers* n_r = dynamic_cast<EmergencyRovers*>(r);
+					n_r->setSpeed(n_r->getSpeed() * 2);
+					Pair< EmergencyRovers*, int> p(n_r, n_r->getdaysInMaintenance());
+					emergency_Rovers_InMaintenance.insertSorted(p);
+				}
+				else if (dynamic_cast<MountaneousRovers*>(r))
+				{
+					MountaneousRovers* n_r = dynamic_cast<MountaneousRovers*>(r);
+					n_r->setSpeed(n_r->getSpeed() * 2);
+					Pair< MountaneousRovers*, int> p(n_r, n_r->getdaysInMaintenance());
+					mountaneous_Rovers_InMaintenance.insertSorted(p);
+				}
+				else if (dynamic_cast<PolarRovers*>(r))
+				{
+					PolarRovers* n_r = dynamic_cast<PolarRovers*>(r);
+					n_r->setSpeed(n_r->getSpeed() * 2);
+					Pair< PolarRovers*, int> p(n_r, n_r->getdaysInMaintenance());
+					Polar_Rovers_InMaintenance.insertSorted(p);
+				}
 			}
 			else
 			{
@@ -747,14 +759,6 @@ void MarsStation::increment_Days()
 	}
 
 	int i = 0;
-	/*while ( i != inExecution_MissionsList.getLength())
-	{
-		Pair<Mission*, int> p1 = inExecution_MissionsList.getEntry(i);
-		Mission* m = p1.get_value();
-		m->set_Execution_Days(m->get_Execution_Days() + 1);
-	}*/
-
-	i = 0;
 	while (i != rovers_InCheckup.getLength())
 	{
 		Pair<Rover*, int> p = rovers_InCheckup.getEntry(i);
@@ -960,21 +964,21 @@ void MarsStation::LoadInputFile() {
 		// Creating/appending the rovers to their corresponding list and setting their checkup durations.
 
 		for (int i = 0; i < M; i++) {
-			MountaneousRovers* toAdd = new MountaneousRovers("M", SM[i]);
+			MountaneousRovers* toAdd = new MountaneousRovers(SM[i]);
 			toAdd->setCheckupD(CM);
 			//toAdd->setdaysInMaintenance();
 			available_Mountaneous_RoversList.insertSorted(Pair<MountaneousRovers*, double>(toAdd, SM[i]));
 		}
 
 		for (int i = 0; i < P; i++) {
-			PolarRovers* toAdd = new PolarRovers("P", SP[i]);
+			PolarRovers* toAdd = new PolarRovers( SP[i]);
 			toAdd->setCheckupD(CP);
 			//toAdd->setdaysInMaintenance();
 			available_Polar_RoversList.insertSorted(Pair<PolarRovers*, double>(toAdd, SP[i]));
 		}
 
 		for (int i = 0; i < E; i++) {
-			EmergencyRovers* toAdd = new EmergencyRovers("E", SE[i]);
+			EmergencyRovers* toAdd = new EmergencyRovers( SE[i]);
 			toAdd->setCheckupD(CE);
 			//toAdd->setdaysInMaintenance();
 			available_Emergency_RoversList.insertSorted(Pair<EmergencyRovers*, double>(toAdd, SE[i]));

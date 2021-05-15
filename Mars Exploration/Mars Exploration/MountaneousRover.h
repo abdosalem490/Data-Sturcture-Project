@@ -7,11 +7,11 @@ public:
 
 	static int checkupDuration;
 
-	MountaneousRovers() : Rover("-1", -1)
+	MountaneousRovers() : Rover( -1)
 	{
 
 	}
-	MountaneousRovers(std::string type, double speed) : Rover(type, speed)
+	MountaneousRovers( double speed) : Rover( speed)
 	{
 
 	}
