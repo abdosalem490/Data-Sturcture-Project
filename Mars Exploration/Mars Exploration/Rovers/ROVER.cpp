@@ -1,10 +1,10 @@
 #include "ROVER.h"
 
-Rover::Rover(std::string argType, double argSpeed = 0) {
+Rover::Rover( double argSpeed = 0) {
 
 	assignMission(nullptr);
 	setSpeed(argSpeed);
-	setType(argType);
+	
 	distanceTravelled = 0;
 
 }
@@ -65,18 +65,32 @@ int Rover::getFM() const {
 	return failedMissions;
 }
 
-std::string Rover::getType() const {
-	return type;
-}
-void Rover::setType(std::string t) {
-	type = t;
-}
 
 double Rover::getDistanceTravelled() const {
 	return distanceTravelled;
 }
 void Rover::incrementDistanceTravelled(double amount) {
 	distanceTravelled += amount;
+}
+
+void Rover::setFinishedMaintenance(bool value)
+{
+	this->finishedMaintenance = value;
+}
+
+bool Rover::getFinishedMaintenance()
+{
+	return this->finishedMaintenance;
+}
+
+void Rover::setMaintenanceDuration(int d)
+{
+	this->maintenanceDuration = d;
+}
+
+int Rover::getMaintenanceDuration()
+{
+	return this->maintenanceDuration;
 }
 
 int Rover::getStatus() const {
