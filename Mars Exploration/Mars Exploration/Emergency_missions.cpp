@@ -3,6 +3,7 @@ Emergency_missions::Emergency_missions(int id, int Formulation_Day, int Signific
 	:Mission(id, Formulation_Day, Significance, Mission_Duration, Target_Location)
 {
 	Calculate_priority();
+	autoPromoted = false;
 }
 void Emergency_missions::Calculate_priority()
 {
@@ -23,4 +24,10 @@ void Emergency_missions::Calculate_priority()
 int Emergency_missions::get_priority()
 {
 	return priority;
+}
+bool Emergency_missions::getAutoPromoted() {
+	return autoPromoted;
+}
+void Emergency_missions::setAutoPromoted(bool p) {
+	autoPromoted = p;
 }

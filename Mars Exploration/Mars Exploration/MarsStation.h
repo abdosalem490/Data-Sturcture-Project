@@ -28,6 +28,8 @@ class MarsStation {
 
 public:
     void LoadInputFile();
+    void SaveOutputFile();
+
     MarsStation();
     void Add_mission(Mission* ptr);
     void Promote_mission(int id);
