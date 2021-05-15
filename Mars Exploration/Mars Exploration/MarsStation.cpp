@@ -602,30 +602,89 @@ void MarsStation::check_for_rovers_into_maintainance() {
 
 	for (int i = 0; i < available_Polar_RoversList.getLength(); i++) {
 
-		int CM = available_Polar_RoversList.getEntry(i).get_value()->getCM();
-		int FM = available_Polar_RoversList.getEntry(i).get_value()->getFM();
-		double speed = available_Polar_RoversList.getEntry(i).get_value()->getSpeed();
-		double distanceTravelled = available_Polar_RoversList.getEntry(i).get_value()->getDistanceTravelled();
+		PolarRovers* toBeMaintained = available_Polar_RoversList.getEntry(i).get_value();
 
-		// TO DO: write an equation that combines all of these.
+		int CM = toBeMaintained->getCM();
+		int FM = toBeMaintained->getFM();
+		double speed = toBeMaintained->getSpeed();
+		double distanceTravelled = toBeMaintained->getDistanceTravelled();
+
+		bool conditions[4] = {(CM == 0 && FM != 0), (distanceTravelled / speed >= 75), (speed < AvgSP), (double(CM) / FM >= (1.0 / 3.0)) };
+		int yes = 0;
+		
+		for (int i = 0; i < 4; i++)
+			if (conditions[i] == true)
+				yes++;
+
+		int days = (yes / 2) * toBeMaintained->getCheckupD();
+
+
+		// Adding it to the maintenance list if any of the following is satisfied:
+		if (yes) {
+			toBeMaintained->setMaintenanceDuration(days);
+			toBeMaintained->setdaysInMaintenance(days);
+
+			available_Polar_RoversList.removeSorted(available_Polar_RoversList.getEntry(i));
+			Pair<PolarRovers*, int> p(toBeMaintained, toBeMaintained->getdaysInMaintenance());
+			Polar_Rovers_InMaintenance.insertSorted(p);
+		}
 	}
 	for (int i = 0; i < available_Mountaneous_RoversList.getLength(); i++) {
 
-		int CM = available_Polar_RoversList.getEntry(i).get_value()->getCM();
-		int FM = available_Polar_RoversList.getEntry(i).get_value()->getFM();
-		double speed = available_Polar_RoversList.getEntry(i).get_value()->getSpeed();
-		double distanceTravelled = available_Polar_RoversList.getEntry(i).get_value()->getDistanceTravelled();
 
-		// TO DO: write an equation that combines all of these.
+		MountaneousRovers* toBeMaintained = available_Mountaneous_RoversList.getEntry(i).get_value();
+		int CM = toBeMaintained->getCM();
+		int FM = toBeMaintained->getFM();
+		double speed = toBeMaintained->getSpeed();
+		double distanceTravelled = toBeMaintained->getDistanceTravelled();
+
+		bool conditions[4] = { (CM == 0 && FM != 0), (distanceTravelled / speed >= 75), (speed < AvgSM), (double(CM) / FM >= (1.0 / 3.0)) };
+		int yes = 0;
+
+		for (int i = 0; i < 4; i++)
+			if (conditions[i] == true)
+				yes++;
+
+		int days = (yes / 2) * toBeMaintained->getCheckupD();
+
+
+		// Adding it to the maintenance list if any of the following is satisfied:
+		if (yes) {
+			toBeMaintained->setMaintenanceDuration(days);
+			toBeMaintained->setdaysInMaintenance(days);
+
+			available_Mountaneous_RoversList.removeSorted(available_Mountaneous_RoversList.getEntry(i));
+			Pair<MountaneousRovers*, int> p(toBeMaintained, toBeMaintained->getdaysInMaintenance());
+			mountaneous_Rovers_InMaintenance.insertSorted(p);
+		}
 	}
 	for (int i = 0; i < available_Emergency_RoversList.getLength(); i++) {
 
-		int CM = available_Polar_RoversList.getEntry(i).get_value()->getCM();
-		int FM = available_Polar_RoversList.getEntry(i).get_value()->getFM();
-		double speed = available_Polar_RoversList.getEntry(i).get_value()->getSpeed();
-		double distanceTravelled = available_Polar_RoversList.getEntry(i).get_value()->getDistanceTravelled();
+		EmergencyRovers* toBeMaintained = available_Emergency_RoversList.getEntry(i).get_value();
+		int CM = toBeMaintained->getCM();
+		int FM = toBeMaintained->getFM();
+		double speed = toBeMaintained->getSpeed();
+		double distanceTravelled = toBeMaintained->getDistanceTravelled();
 
-		// TO DO: write an equation that combines all of these.
+		bool conditions[4] = { (CM == 0 && FM != 0), (distanceTravelled / speed >= 75), (speed < AvgSE), (double(CM) / FM >= (1.0 / 3.0)) };
+		int yes = 0;
+
+		for (int i = 0; i < 4; i++)
+			if (conditions[i] == true)
+				yes++;
+
+		int days = (yes / 2) * toBeMaintained->getCheckupD();
+
+
+		// Adding it to the maintenance list if any of the following is satisfied:
+		if (yes) {
+			toBeMaintained->setMaintenanceDuration(days);
+			toBeMaintained->setdaysInMaintenance(days);
+
+			available_Emergency_RoversList.removeSorted(available_Emergency_RoversList.getEntry(i));
+			Pair<EmergencyRovers*, int> p(toBeMaintained, toBeMaintained->getdaysInMaintenance());
+			emergency_Rovers_InMaintenance.insertSorted(p);
+		}
 	}
 
 }
@@ -821,6 +880,8 @@ void MarsStation::Promote_mission(int id)
 		if (id_temp == id)
 		{
 			Emergency_missions* n_t = new Emergency_missions(t->get_ID(), t->get_Formulation_Day(), t->get_Significance(), t->get_Mission_Duration(), t->get_Target_Location());
+			n_t->setAutoPromoted(true);
+			
 			Add_mission(n_t);
 		}
 		else
@@ -964,7 +1025,9 @@ void MarsStation::LoadInputFile() {
 		// Creating/appending the rovers to their corresponding list and setting their checkup durations.
 
 		for (int i = 0; i < M; i++) {
-			MountaneousRovers* toAdd = new MountaneousRovers(SM[i]);
+			
+			MountaneousRovers* toAdd = new MountaneousRovers( SM[i]);
+
 			toAdd->setCheckupD(CM);
 			//toAdd->setdaysInMaintenance();
 			available_Mountaneous_RoversList.insertSorted(Pair<MountaneousRovers*, double>(toAdd, SM[i]));
@@ -1046,8 +1109,8 @@ void MarsStation::LoadInputFile() {
 				// For meanings of the variables: check the project documents: section input file.
 
 				string TYP = "";
-				double TLOC, MDUR = 0;
-				int SIG = 0;
+				double TLOC = 0;
+				int SIG, MDUR = 0;
 
 				TYP = l.substr(0, l.find_first_of(WHITESPACE));
 				l = l.substr(TYP.length() + 1, string::npos);
@@ -1063,14 +1126,14 @@ void MarsStation::LoadInputFile() {
 
 				TLOC = std::stod(l.substr(0, l.find_first_of(WHITESPACE)));
 				l = l.substr(l.substr(0, l.find_first_of(WHITESPACE)).length() + 1, string::npos);
-
-				MDUR = std::stod(l.substr(0, l.find_first_of(WHITESPACE)));
+				
+				stringstream MDURstream(l.substr(0, l.find_first_of(WHITESPACE)));
+				MDURstream >> MDUR;
 				l = l.substr(l.substr(0, l.find_first_of(WHITESPACE)).length() + 1, string::npos);
 
 				stringstream SIGstream(l);
 				SIGstream >> SIG;
 
-				// cout << eventType << " " << TYP << " " << ED << " " << ID << " " << TLOC << " " << MDUR << " " << SIG << endl;
 				FormulationEvent* toAppend;
 				toAppend = new FormulationEvent(ID, ED, TYP[0], TLOC, MDUR, SIG, this);
 
@@ -1080,6 +1143,80 @@ void MarsStation::LoadInputFile() {
 		}
 	}
 
+	delete[] SM, SP, SE;
+
+
 	fileToLoad.close();
+	return;
+}
+void MarsStation::SaveOutputFile() {
+
+	ofstream outputfile;
+	outputfile.open("output.txt");
+
+	if (outputfile.is_open()) {
+
+
+		outputfile << "CD\tID\tFD\tWD\tED" << endl;
+		
+		int numOfPolarM = 0, numOfEmergencyM = 0, numOfMntM = 0, total = 0, autoPromotedM = 0;
+		double waitingDays = 0, executionDays = 0, avgWaiting = 0, avgExecution = 0;
+		
+		
+		// Printing, and getting number of completed missions.
+		for (int i = 0; i < completed_MissionsList.getLength(); i++) {
+			Mission* completed = completed_MissionsList.getEntry(i).get_value();
+			outputfile << completed->get_Completion_Day() << "\t" << completed->get_ID() << "\t" << completed->get_Formulation_Day() << "\t" << completed->get_Waiting_Days() << "\t" << completed->get_Execution_Days();
+			
+			waitingDays += completed->get_Waiting_Days();
+			executionDays += completed->get_Execution_Days();
+
+			if (dynamic_cast<Polar_missions*> (completed))
+				numOfPolarM++;
+			else if (dynamic_cast<Emergency_missions*> (completed)) {
+				numOfEmergencyM++;
+
+				// For calculation of the percentage of automatically promoted missions later.
+				if (dynamic_cast<Emergency_missions*> (completed)->getAutoPromoted() == true)
+					autoPromotedM++;
+			}
+			else
+				numOfMntM++;
+		}
+
+
+		total = numOfPolarM + numOfEmergencyM + numOfMntM;
+		avgExecution = executionDays / total;
+		avgWaiting = waitingDays / total;
+
+		outputfile << endl << endl;
+		outputfile << "Missions: " << total << "[M: " << numOfMntM << ", P: " << numOfPolarM << ", E: " << numOfEmergencyM << endl;
+
+		int numOfPolarR = available_Polar_RoversList.getLength() + Polar_Rovers_InMaintenance.getLength();
+		int numOfMntR = available_Mountaneous_RoversList.getLength() + mountaneous_Rovers_InMaintenance.getLength();
+		int numofEmergencyR = available_Emergency_RoversList.getLength() + emergency_Rovers_InMaintenance.getLength();
+
+		// Uncomment the following part if it is allowed to finish the program while there are rovers in checkup.
+		
+		/*for (int i = 0; i < rovers_InCheckup.getLength(); i++) {
+			if (dynamic_cast<PolarRovers*> (rovers_InCheckup.getEntry(i).get_value()))
+				numOfPolarR++;
+			else if (dynamic_cast<EmergencyRovers*> (rovers_InCheckup.getEntry(i).get_value()))
+				numofEmergencyR++;
+			else
+				numOfMntR++;
+		}*/
+
+		int totalR = numOfPolarR + numofEmergencyR + numOfMntR;
+		outputfile << "Rovers: " << totalR << "\t[M: " << numOfMntR << ", P: " << numOfPolarR << ", E: " << numofEmergencyR << "]" << endl;
+		outputfile << "Avg Wait = " << avgWaiting << ", Avg Execution = " << avgExecution << endl;
+		outputfile << "Auto-promoted: " << autoPromotedM / total << endl;
+
+
+		outputfile.close();
+
+	}
+
+
 	return;
 }
