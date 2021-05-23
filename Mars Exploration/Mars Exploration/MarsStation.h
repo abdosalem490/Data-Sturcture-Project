@@ -49,6 +49,9 @@ public:
     // Assigning missions to rover
     void Assign_mission();
 
+    // Execution
+    bool Execution();
+
     //============================= methods for returning data to be printed ===================================
     void getWaitingMissions(Node<int>*& e , Node<int>*& p , Node<int>*& m);
     void getInExecutionMissionRover(Node<int>*& e_m, Node<int>*& e_r, Node<int>*& p_m, Node<int>*& p_r, Node<int>*& m_m, Node<int>*& m_r);
@@ -58,8 +61,10 @@ public:
     void getRoversInMaintenance(Node<int>*& e, Node<int>*& p, Node<int>*& m);
     //=========================================== end of methods ===========================================
 
-    //temp function to be deleted when hany deliever execute days function
-    bool executeDays();
+    ////temp function to be deleted when hany deliever execute days function
+    //                 
+    //                                 Hany finshed the function
+    //bool executeDays();
 private:
     const std::string WHITESPACE = " \n\r\t\f\v";
 
@@ -83,7 +88,7 @@ private:
     int AutoP, EV;
 
     //today's day 
-    int today = 1;
+    int today = 0;
 
     //<------------------------------Lists--------------------------------->
 

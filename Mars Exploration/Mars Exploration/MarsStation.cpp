@@ -16,6 +16,29 @@ MarsStation::MarsStation() {
 	UI* ourUI = new UI(this);
 	SaveOutputFile();
 }
+
+// Execution
+bool MarsStation::Execution()
+{
+	increment_Days();
+	execute_Events();
+	check_For_Failed_Missions();
+	check_For_Completed_Rovers_Missions();
+	check_for_rovers_into_maintainance();
+	check_for_rovers_outta_maintainance();
+	check_To_Get_From_Checkup();
+	Assign_mission();
+
+	if (available_Emergency_MissionList.isEmpty() && available_Mountaneous_MissionList.isEmpty() && available_Polar_MissionList.isEmpty() && eventsList.isEmpty() && inExecution_MissionsList.isEmpty())
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 // Assigning missions to rover
 void MarsStation::Assign_mission()
 {
@@ -1756,8 +1779,11 @@ void MarsStation::getRoversInMaintenance(Node<int>*& e, Node<int>*& p, Node<int>
 //=========================================== end of methods ===========================================
 
 
-//temp function to be deleted when hany deliever execute days function
-bool MarsStation::executeDays()
-{
-	return true;
-}
+////temp function to be deleted when hany deliever execute days function
+// ////////////////
+//                              Hany finished the function
+// ////////////////
+//bool MarsStation::executeDays()
+//{
+//	return true;
+//}

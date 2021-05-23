@@ -40,7 +40,7 @@ void UI::Execute(int choice) {
 		// ADD CODE OF INTERACTIVE UI.
 		int x;
 		//the condition of the while loop to be modified
-		while (pStation->executeDays())
+		while (pStation->Execution())
 		{
 			cout << "press any key to continue" << endl;
 			cin >> x;
@@ -57,7 +57,7 @@ void UI::Execute(int choice) {
 		// ADD CODE OF STEP-BY-STEP UI.
 		
 		//the condition of the while loop to be modified
-		while (pStation->executeDays())
+		while (pStation->Execution())
 		{
 			std::this_thread::sleep_for(std::chrono::seconds(1));
 			printDay();
@@ -71,6 +71,14 @@ void UI::Execute(int choice) {
 	else {
 
 		// ADD CODE OF SILENT UI.
+		cout << "Silent Mode\n";
+		cout << "Simulation Starts...\n";
+		while (pStation->Execution())
+		{
+
+		}
+		cout << "Simulation ends, Output file created\n";
+
 
 	}
 
