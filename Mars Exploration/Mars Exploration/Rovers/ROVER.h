@@ -54,6 +54,11 @@ public:
 	virtual void setMaintenanceDuration(int d);
 	virtual int getMaintenanceDuration();
 
+	//setters and getters for the ID
+	virtual int getID();
+	virtual void setID(int id);
+
+
 private:
 
 	double speed;
@@ -74,7 +79,7 @@ private:
 
 	// replace the int pointer with a mission pointer!
 	Mission* assignedMission;
-
+	int ID;
 
 };
 

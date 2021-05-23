@@ -93,6 +93,18 @@ int Rover::getMaintenanceDuration()
 	return this->maintenanceDuration;
 }
 
+int Rover::getID()
+{
+	return this->ID;
+}
+
+void Rover::setID(int id)
+{
+	this->ID = id;
+}
+
+
+
 int Rover::getStatus() const {
 	if (assignedMission == nullptr)
 		return 1; // Available
