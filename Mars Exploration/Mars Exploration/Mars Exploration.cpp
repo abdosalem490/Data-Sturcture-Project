@@ -6,6 +6,7 @@
 #include "MarsStation.h"
 #include "LinkedPriorityQueue.h"
 #include "SortedList.h"
+#include "UI.h"
 using namespace std;
 
 int main()
@@ -29,6 +30,7 @@ int main()
 	//	cout << x.get_value() << " ";
 	//}
 	MarsStation s;
+	UI s1(&s);
 	//LinkedSortedList<int> test;
 	/*test.insertSorted(9);
 	test.insertSorted(2);

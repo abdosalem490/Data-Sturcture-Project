@@ -49,6 +49,17 @@ public:
     // Assigning missions to rover
     void Assign_mission();
 
+    //============================= methods for returning data to be printed ===================================
+    void getWaitingMissions(Node<int>*& e , Node<int>*& p , Node<int>*& m);
+    void getInExecutionMissionRover(Node<int>*& e_m, Node<int>*& e_r, Node<int>*& p_m, Node<int>*& p_r, Node<int>*& m_m, Node<int>*& m_r);
+    void getAvailableRover(Node<int>*& e, Node<int>*& p, Node<int>*& m);
+    void getInCheckupRover(Node<int>*& e, Node<int>*& p, Node<int>*& m);
+    void getCompletedMission(Node<int>*& e, Node<int>*& p, Node<int>*& m);
+    void getRoversInMaintenance(Node<int>*& e, Node<int>*& p, Node<int>*& m);
+    //=========================================== end of methods ===========================================
+
+    //temp function to be deleted when hany deliever execute days function
+    bool executeDays();
 private:
     const std::string WHITESPACE = " \n\r\t\f\v";
 

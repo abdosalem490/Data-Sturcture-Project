@@ -150,6 +150,7 @@
     <ClCompile Include="Polar_missions.cpp" />
     <ClCompile Include="PromotionEvent.cpp" />
     <ClCompile Include="Rovers\ROVER.cpp" />
+    <ClCompile Include="UI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CancellationEvent.h" />
@@ -173,6 +174,7 @@
     <ClInclude Include="QueueADT.h" />
     <ClInclude Include="Rovers\ROVER.h" />
     <ClInclude Include="SortedList.h" />
+    <ClInclude Include="UI.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
