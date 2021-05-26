@@ -9,6 +9,16 @@ UI::UI(MarsStation *arg) {
 	pStation = arg;
 	int choice = 0;
 	bool flag = false;
+	std::string fileName = "";
+
+	std::cout << "Enter name of the name of the input file (with extension) to load: ";
+	
+	cin >> fileName;
+	pStation->setInputFileName(fileName);
+
+	std::cout << "Output file will be " << pStation->getOutputFile() << endl << endl;
+	pStation->LoadInputFile();
+
 
 	std::cout << "Choose the mode to run the program in:\n";
 	std::cout << "1. Interactive mode.\n2. Step-By-Step mode.\n3. Silent Mode.\n";
@@ -38,18 +48,22 @@ void UI::Execute(int choice) {
 	if (choice == 1) {
 
 		// ADD CODE OF INTERACTIVE UI.
-		int x;
+		int n;
+
 		//the condition of the while loop to be modified
-		while (pStation->Execution())
+		cout << "Press enter to proceed from a day to the next." << endl;
+		while (!pStation->Execution())
 		{
-			cout << "press any key to continue" << endl;
-			cin >> x;
+			do {
+				n = cin.get();
+			} while (n != (int)'\n');
+			
 			printDay();
 			printWaitingMissions();
-			printInExecutionMissionRovers();
-			printAvailableRovers();
-			printInCheckupRovers();
-			printCompletedMission();
+			//printInExecutionMissionRovers();
+			//printAvailableRovers();
+			//printInCheckupRovers();
+			//printCompletedMission();
 		}
 	}
 	else if (choice == 2) 
@@ -57,15 +71,15 @@ void UI::Execute(int choice) {
 		// ADD CODE OF STEP-BY-STEP UI.
 		
 		//the condition of the while loop to be modified
-		while (pStation->Execution())
+		while (!pStation->Execution())
 		{
 			std::this_thread::sleep_for(std::chrono::seconds(1));
 			printDay();
 			printWaitingMissions();
-			printInExecutionMissionRovers();
-			printAvailableRovers();
-			printInCheckupRovers();
-			printCompletedMission();
+			//printInExecutionMissionRovers();
+			//printAvailableRovers();
+			//printInCheckupRovers();
+			//printCompletedMission();
 		}
 	}
 	else {
@@ -73,7 +87,7 @@ void UI::Execute(int choice) {
 		// ADD CODE OF SILENT UI.
 		cout << "Silent Mode\n";
 		cout << "Simulation Starts...\n";
-		while (pStation->Execution())
+		while (!pStation->Execution())
 		{
 
 		}

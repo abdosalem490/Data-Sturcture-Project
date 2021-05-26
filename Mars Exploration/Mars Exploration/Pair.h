@@ -28,7 +28,7 @@ public:
 	}
 	M getPriority() const
 	{
-		return this->priority;
+		return priority;
 	}	
 	~Pair()
 	{

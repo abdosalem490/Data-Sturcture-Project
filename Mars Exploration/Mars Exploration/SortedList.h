@@ -166,9 +166,10 @@ public:
 
 		if (headPtr == nullptr)
 			return false;
-
+		
 		Node<ItemType>* curPtr = nullptr;
-		if (position == 1)
+
+		if (position == 0)
 		{
 			// Remove the first node in the chain
 			curPtr = headPtr; // Save pointer to node
@@ -180,10 +181,15 @@ public:
 
 			curPtr = prevPtr->getNext();
 
-			prevPtr->setNext(curPtr->getNext());
+			if (curPtr)
+				prevPtr->setNext(curPtr->getNext());
+			else
+				prevPtr->setNext(nullptr);
 
 		}
-		curPtr->setNext(nullptr);
+
+		if (curPtr)
+			curPtr->setNext(nullptr);
 		delete curPtr;
 		curPtr = nullptr;
 		return true;
@@ -192,7 +198,7 @@ public:
 	void clear() {
 
 		while (!isEmpty())
-			remove(1);
+			remove(0);
 
 	}
 	ItemType getEntry(int position) const {

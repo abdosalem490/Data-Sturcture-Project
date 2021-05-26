@@ -1,5 +1,8 @@
 #ifndef MARS_STATION_H
 #define MARS_STATION_H
+
+#include <string>
+
 #include "Mission.h"
 #include "Emergency_missions.h"
 #include "Polar_missions.h"
@@ -65,7 +68,33 @@ public:
     //                 
     //                                 Hany finshed the function
     //bool executeDays();
+
+    void setInputFileName(std::string arg) {
+        inputFileName = arg;
+        
+        // Removing .txt extension, adding _output trail to the output file name, then reappending it again.
+        std::string temp = inputFileName;
+        std::string extension = ".txt";
+
+        std::string::size_type i = temp.find(extension);
+
+        if (i != std::string::npos)
+            temp.erase(i, extension.length());
+
+        outputFileName = temp + "_output" + ".txt";
+    }
+
+    std::string getOutputFile() const {
+        return outputFileName;
+    }
+
 private:
+    
+    std::string inputFileName;
+    std::string outputFileName;
+
+    
+
     const std::string WHITESPACE = " \n\r\t\f\v";
 
     // Array of speeds for each list/type of rovers.
