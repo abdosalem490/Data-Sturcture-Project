@@ -12,7 +12,8 @@
 using namespace std;
 
 MarsStation::MarsStation() {
-	LoadInputFile();
+
+	// Calling function LoadInputFile() is now moved inside UI to get the file name.
 	UI* ourUI = new UI(this);
 	SaveOutputFile();
 }
@@ -21,22 +22,43 @@ MarsStation::MarsStation() {
 bool MarsStation::Execution()
 {
 	increment_Days();
-	execute_Events();
-	check_For_Failed_Missions();
-	check_For_Completed_Rovers_Missions();
-	check_for_rovers_into_maintainance();
-	check_for_rovers_outta_maintainance();
-	check_To_Get_From_Checkup();
-	Assign_mission();
 
-	if (available_Emergency_MissionList.isEmpty() && available_Mountaneous_MissionList.isEmpty() && available_Polar_MissionList.isEmpty() && eventsList.isEmpty() && inExecution_MissionsList.isEmpty())
+	execute_Events();
+	//std::cout << "execute_Events day " << today << endl;
+
+	//check_For_Failed_Missions();
+	//std::cout << "check_For_Failed_Missions day " << today << endl;
+
+	check_For_Completed_Rovers_Missions();
+	//std::cout << "check_For_Completed_Rovers_Missions day " << today << endl;
+
+	check_for_rovers_into_maintainance();
+	//std::cout << "check_for_rovers_into_maintainance day " << today << endl;
+
+	check_for_rovers_outta_maintainance();
+	//std::cout << "check_for_rovers_outta_maintainance day " << today << endl;
+
+	check_To_Get_From_Checkup();
+	//std::cout << "check_To_Get_From_Checkup day " << today << endl;
+
+	Assign_mission();
+	//std::cout << "Assign_mission day " << today << endl;
+	
+	if (available_Emergency_MissionList.isEmpty() 
+		&& available_Mountaneous_MissionList.isEmpty() 
+		&& available_Polar_MissionList.isEmpty() 
+		&& eventsList.isEmpty() 
+		&& inExecution_MissionsList.isEmpty())
 	{
 		return true;
 	}
 	else
 	{
+
+		//std::cout << "FINISHED DAY " << today << endl << endl;
 		return false;
 	}
+	// return true;
 }
 
 // Assigning missions to rover
@@ -388,6 +410,7 @@ void MarsStation::Assign_mission()
 void MarsStation::Cancel_mission(int id)
 {
 	LinkedQueue <Mountainous_missions*> temp;
+	bool found = false;
 	while (available_Mountaneous_MissionList.isEmpty() == false)
 	{
 		Mountainous_missions* t;
@@ -404,22 +427,36 @@ void MarsStation::Cancel_mission(int id)
 		temp.dequeue(t);
 		available_Mountaneous_MissionList.enqueue(t);
 	}
+
+	// If the mission to be cancelled is already found in the avaliable missions, exit the funcion.
+	// Otherwise, proceed to look for it in the inExecution mission list.
+	if (found)
+		return;
+	
+	// This part is for when the mission is cancelled while in execution.getEntry
+	for (int i = 0; i < inExecution_MissionsList.getLength(); i++) {
+		Pair<Mission*, int>p = inExecution_MissionsList.getEntry(i);
+		Mission* m = p.get_value();
+		if (m->get_ID() == id) {
+			inExecution_MissionsList.remove(i);
+			return;
+		}
+	}
+
 }
 void MarsStation::execute_Events()
 {
 	Event* e;
 	while (!eventsList.isEmpty())
 	{
-		if (eventsList.peek(e))
+		eventsList.peek(e);
+		if (e->getEventDay() != today)
 		{
-			if (e->getEventDay() != today)
-			{
-				break;
-			}
-			eventsList.dequeue(e);
-			e->execute();
+			break;
 		}
-	}
+		eventsList.dequeue(e);
+		e->execute();
+		}
 }
 void MarsStation::check_For_Completed_Rovers_Missions()
 {
@@ -464,9 +501,10 @@ void MarsStation::check_For_Completed_Rovers_Missions()
 			r->incrementDistanceTravelled(m->get_Target_Location() * 2);
 
 
-			if (r && (r->getCM() % N == 0))
+			if (r && (r->getCmForCheckup() % N == 0))
 			{
 				r->setdaysInCheckup(r->getCheckupD());
+				r->setCMforCheckup(0);
 				Pair<Rover*, int>p2_new(r, r->getdaysInCheckup());
 				rovers_InCheckup.insertSorted(p2_new);
 			}
@@ -518,24 +556,32 @@ void MarsStation::check_For_Completed_Rovers_Missions()
 		}
 		else
 		{
+
 			m = nullptr;
 			r = nullptr;
 			break;
 		}
 	}
 }
+
 void MarsStation::check_For_Failed_Missions()
 {
+	// Setting random seend and generating a random number
 	srand((unsigned)time(0));
 	int random = rand();
-	random = (random % (inExecution_MissionsList.getLength())*20) + 1;
+
+	if (inExecution_MissionsList.getLength())
+		random = (random % (inExecution_MissionsList.getLength())*20) + 1;
+	
 	int i = 0;
 	Mission* m;
 	Rover* r;
-	while (i != inExecution_MissionsList.getLength())
+	
+	while (i < inExecution_MissionsList.getLength())
 	{
 		Pair<Mission*, int>p1 = inExecution_MissionsList.getEntry(i);
 		m = p1.get_value();
+
 		if (m->get_ID() == random)
 		{
 			Pair<Rover*, int> p1 = rovers_InMission.getEntry(i);
@@ -561,7 +607,7 @@ void MarsStation::check_For_Failed_Missions()
 				Polar_missions* n_m = dynamic_cast<Polar_missions*>(m);
 				available_Polar_MissionList.enqueue(n_m);
 			}
-			if (r && (r->getCM() % N == 0))
+			if (r && (r->getTotalCM() % N == 0))
 			{
 				r->setdaysInCheckup(r->getCheckupD());
 				Pair<Rover*, int> p(r, r->getdaysInCheckup());
@@ -629,7 +675,7 @@ void MarsStation::check_for_rovers_into_maintainance() {
 
 		PolarRovers* toBeMaintained = available_Polar_RoversList.getEntry(i).get_value();
 
-		int CM = toBeMaintained->getCM();
+		int CM = toBeMaintained->getTotalCM();
 		int FM = toBeMaintained->getFM();
 		double speed = toBeMaintained->getSpeed();
 		double distanceTravelled = toBeMaintained->getDistanceTravelled();
@@ -658,7 +704,7 @@ void MarsStation::check_for_rovers_into_maintainance() {
 
 
 		MountaneousRovers* toBeMaintained = available_Mountaneous_RoversList.getEntry(i).get_value();
-		int CM = toBeMaintained->getCM();
+		int CM = toBeMaintained->getTotalCM();
 		int FM = toBeMaintained->getFM();
 		double speed = toBeMaintained->getSpeed();
 		double distanceTravelled = toBeMaintained->getDistanceTravelled();
@@ -686,7 +732,7 @@ void MarsStation::check_for_rovers_into_maintainance() {
 	for (int i = 0; i < available_Emergency_RoversList.getLength(); i++) {
 
 		EmergencyRovers* toBeMaintained = available_Emergency_RoversList.getEntry(i).get_value();
-		int CM = toBeMaintained->getCM();
+		int CM = toBeMaintained->getTotalCM();
 		int FM = toBeMaintained->getFM();
 		double speed = toBeMaintained->getSpeed();
 		double distanceTravelled = toBeMaintained->getDistanceTravelled();
@@ -715,7 +761,7 @@ void MarsStation::check_for_rovers_into_maintainance() {
 }
 void MarsStation::check_for_rovers_outta_maintainance() {
 
-	for (int i = 0; i < emergency_Rovers_InMaintenance.getLength(); i++) {
+	/*for (int i = 0; i < emergency_Rovers_InMaintenance.getLength(); i++) {
 		Pair<EmergencyRovers*, int>p = emergency_Rovers_InMaintenance.getEntry(i);
 		EmergencyRovers* r = p.get_value();
 		if (r->getdaysInMaintenance() == 0) {
@@ -724,7 +770,7 @@ void MarsStation::check_for_rovers_outta_maintainance() {
 			available_Emergency_RoversList.insertSorted(p);
 		}
 	}
-	for (int i = 0; i < mountaneous_Rovers_InMaintenance.getLength(); i++) {
+	/*for (int i = 0; i < mountaneous_Rovers_InMaintenance.getLength(); i++) {
 
 		Pair<MountaneousRovers*, int>p = mountaneous_Rovers_InMaintenance.getEntry(i);
 
@@ -734,8 +780,8 @@ void MarsStation::check_for_rovers_outta_maintainance() {
 			Pair<MountaneousRovers*, double> p(r, r->getSpeed());
 			available_Mountaneous_RoversList.insertSorted(p);
 		}
-	}
-	for (int i = 0; i < Polar_Rovers_InMaintenance.getLength(); i++) {
+	}*/
+	/*for (int i = 0; i < Polar_Rovers_InMaintenance.getLength(); i++) {
 		Pair<PolarRovers*, int>p = Polar_Rovers_InMaintenance.getEntry(i);
 		PolarRovers* r = p.get_value();
 		if (r->getdaysInMaintenance() == 0) {
@@ -743,14 +789,13 @@ void MarsStation::check_for_rovers_outta_maintainance() {
 			Pair<PolarRovers*, double> p(r, r->getSpeed());
 			available_Polar_RoversList.insertSorted(p);
 		}
-	}
-
+	}*/
 }
 void MarsStation::check_To_Get_From_Checkup()
 {
 	int i;
 	i = 0;
-	while (i != rovers_InCheckup.getLength())
+	while (i < rovers_InCheckup.getLength())
 	{
 		Pair<Rover*, int>p = rovers_InCheckup.getEntry(i);
 		Rover* r = p.get_value();
@@ -945,7 +990,7 @@ void MarsStation::LoadInputFile() {
 
 	ifstream fileToLoad;
 	string l = "";
-	fileToLoad.open("input.txt");
+	fileToLoad.open(inputFileName);
 
 	if (fileToLoad.is_open()) {
 
@@ -1013,13 +1058,11 @@ void MarsStation::LoadInputFile() {
 				stringstream speed(tmp);
 
 				speed >> temparr[j];
-				//std::cout << temparr[j] << endl;
 				*tempAvg = *tempAvg + temparr[j];
 
 				if (j != tempCount - 1)
 					l = l.substr(tmp.length() + 1, string::npos);
 			}
-			//std::cout << endl << endl;
 		}
 
 
@@ -1049,13 +1092,18 @@ void MarsStation::LoadInputFile() {
 
 		// Creating/appending the rovers to their corresponding list and setting their checkup durations.
 
+		int ID = 0;
+
 		for (int i = 0; i < M; i++) {
 			
 			MountaneousRovers* toAdd = new MountaneousRovers( SM[i]);
 
 			toAdd->setCheckupD(CM);
 			//toAdd->setdaysInMaintenance();
+
 			available_Mountaneous_RoversList.insertSorted(Pair<MountaneousRovers*, double>(toAdd, SM[i]));
+			toAdd->setID(ID);
+			ID++;
 		}
 
 		for (int i = 0; i < P; i++) {
@@ -1063,6 +1111,8 @@ void MarsStation::LoadInputFile() {
 			toAdd->setCheckupD(CP);
 			//toAdd->setdaysInMaintenance();
 			available_Polar_RoversList.insertSorted(Pair<PolarRovers*, double>(toAdd, SP[i]));
+			toAdd->setID(ID);
+			ID++;
 		}
 
 		for (int i = 0; i < E; i++) {
@@ -1070,6 +1120,8 @@ void MarsStation::LoadInputFile() {
 			toAdd->setCheckupD(CE);
 			//toAdd->setdaysInMaintenance();
 			available_Emergency_RoversList.insertSorted(Pair<EmergencyRovers*, double>(toAdd, SE[i]));
+			toAdd->setID(ID);
+			ID++;
 		}
 
 		// ------------------------------ Getting auto promotion and number of events ------------------------------ //
@@ -1087,9 +1139,6 @@ void MarsStation::LoadInputFile() {
 
 		stringstream EVstream(l.substr(0, l.find_first_of(WHITESPACE)));
 		EVstream >> EV;
-
-		// Checking line: to be removed later.
-		//cout << "AutoP" << AutoP << "E" << EV << endl;
 
 
 		// ------------------------------ Getting Events ------------------------------ //
@@ -1127,6 +1176,7 @@ void MarsStation::LoadInputFile() {
 					toAppend = new PromotionEvent(ID, ED, this);
 
 				eventsList.enqueue(toAppend);
+
 			}
 
 			// This is for the Formulation event type.
@@ -1177,7 +1227,7 @@ void MarsStation::LoadInputFile() {
 void MarsStation::SaveOutputFile() {
 
 	ofstream outputfile;
-	outputfile.open("output.txt");
+	outputfile.open(outputFileName);
 
 	if (outputfile.is_open()) {
 
@@ -1207,6 +1257,8 @@ void MarsStation::SaveOutputFile() {
 			}
 			else
 				numOfMntM++;
+
+			outputfile << endl;
 		}
 
 
@@ -1215,22 +1267,22 @@ void MarsStation::SaveOutputFile() {
 		avgWaiting = waitingDays / total;
 
 		outputfile << endl << endl;
-		outputfile << "Missions: " << total << "[M: " << numOfMntM << ", P: " << numOfPolarM << ", E: " << numOfEmergencyM << endl;
+		outputfile << "Missions: " << total << "[M: " << numOfMntM << ", P: " << numOfPolarM << ", E: " << numOfEmergencyM << "]" << endl;
 
 		int numOfPolarR = available_Polar_RoversList.getLength() + Polar_Rovers_InMaintenance.getLength();
 		int numOfMntR = available_Mountaneous_RoversList.getLength() + mountaneous_Rovers_InMaintenance.getLength();
 		int numofEmergencyR = available_Emergency_RoversList.getLength() + emergency_Rovers_InMaintenance.getLength();
 
-		// Uncomment the following part if it is allowed to finish the program while there are rovers in checkup.
-		
-		/*for (int i = 0; i < rovers_InCheckup.getLength(); i++) {
+		// Comment the following part if it is NOT allowed to finish the program while there are rovers in checkup.
+
+		for (int i = 0; i < rovers_InCheckup.getLength(); i++) {
 			if (dynamic_cast<PolarRovers*> (rovers_InCheckup.getEntry(i).get_value()))
 				numOfPolarR++;
 			else if (dynamic_cast<EmergencyRovers*> (rovers_InCheckup.getEntry(i).get_value()))
 				numofEmergencyR++;
 			else
 				numOfMntR++;
-		}*/
+		}
 
 		int totalR = numOfPolarR + numofEmergencyR + numOfMntR;
 		outputfile << "Rovers: " << totalR << "\t[M: " << numOfMntR << ", P: " << numOfPolarR << ", E: " << numofEmergencyR << "]" << endl;

@@ -1,6 +1,0 @@
-CD	ID	FD	WD	ED
-
-
-Missions: 0[M: 0, P: 0, E: 0
-Rovers: 10	[M: 3, P: 2, E: 5]
-Avg Wait = -nan(ind), Avg Execution = -nan(ind)

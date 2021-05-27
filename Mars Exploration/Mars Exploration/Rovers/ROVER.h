@@ -19,9 +19,16 @@ public:
 
 	// Get No. completed missions, increment it, 
 	// or decrement it (in case of faliure for instance.)
-	virtual int getCM() const;
+	virtual int getTotalCM() const;
 	virtual void incrementCM();
 	virtual void decrementCM();
+
+	int getCmForCheckup() const {
+		return CMtillCheckup;
+	}
+	void setCMforCheckup(int a) {
+		CMtillCheckup = a;
+	}
 
 	// Get No. failed missions, increment it.
 	virtual int getFM() const;
@@ -67,12 +74,13 @@ private:
 	int maintenanceDuration;
 	double distanceTravelled;
 
-	int daysInCheckup = 0 ;
+	int daysInCheckup = 0;
 	int daysInMaintenance = 0;
 
 	bool finishedMaintenance = true;
 
-	int completedMissions;
+	int totalCM = 0;
+	int CMtillCheckup = 0;
 	// For bonus, to store the number of failed missions that were assigned to this rover.
 	// This may help then to determine the parameter of when to move this rover to maintainance.
 	int failedMissions;

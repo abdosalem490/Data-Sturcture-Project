@@ -30,7 +30,6 @@ int main()
 	//	cout << x.get_value() << " ";
 	//}
 	MarsStation s;
-	UI s1(&s);
 	//LinkedSortedList<int> test;
 	/*test.insertSorted(9);
 	test.insertSorted(2);

@@ -20,7 +20,7 @@ void Rover::setdaysInCheckup(int d)
 
 int Rover::getdaysInCheckup()
 {
-	return this->getdaysInCheckup();
+	return daysInCheckup;
 }
 
 void Rover::setdaysInMaintenance(int d)
@@ -30,7 +30,7 @@ void Rover::setdaysInMaintenance(int d)
 
 int Rover::getdaysInMaintenance()
 {
-	return this->daysInMaintenance;
+	return daysInMaintenance;
 }
 
 void Rover::setSpeed(double argSpeed) {
@@ -48,14 +48,15 @@ int Rover::getCheckupD() const {
 }
 
 void Rover::incrementCM() {
-	completedMissions++;
+	totalCM++;
+	setCMforCheckup(CMtillCheckup++);
 }
 void Rover::decrementCM() {
-	if (completedMissions != 0)
-		completedMissions--;
+	if (totalCM != 0)
+		totalCM--;
 }
-int Rover::getCM() const {
-	return completedMissions;
+int Rover::getTotalCM() const {
+	return totalCM;
 }
 
 void Rover::incrementFM() {
