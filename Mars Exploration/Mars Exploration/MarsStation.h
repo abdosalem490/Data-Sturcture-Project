@@ -64,10 +64,9 @@ public:
     void getRoversInMaintenance(Node<int>*& e, Node<int>*& p, Node<int>*& m);
     //=========================================== end of methods ===========================================
 
-    ////temp function to be deleted when hany deliever execute days function
-    //                 
-    //                                 Hany finshed the function
-    //bool executeDays();
+    // for auto promotion of mountaneous rovers
+    void autoPromote();
+
 
     void setInputFileName(std::string arg) {
         inputFileName = arg;

@@ -21,6 +21,8 @@ MarsStation::MarsStation() {
 // Execution
 bool MarsStation::Execution()
 {
+	
+
 	increment_Days();
 
 	execute_Events();
@@ -41,13 +43,15 @@ bool MarsStation::Execution()
 	check_To_Get_From_Checkup();
 	//std::cout << "check_To_Get_From_Checkup day " << today << endl;
 
+	autoPromote();
+
 	Assign_mission();
 	//std::cout << "Assign_mission day " << today << endl;
 	
-	if (available_Emergency_MissionList.isEmpty() 
-		&& available_Mountaneous_MissionList.isEmpty() 
-		&& available_Polar_MissionList.isEmpty() 
-		&& eventsList.isEmpty() 
+	if (available_Emergency_MissionList.isEmpty()
+		&& available_Mountaneous_MissionList.isEmpty()
+		&& available_Polar_MissionList.isEmpty()
+		&& eventsList.isEmpty()
 		&& inExecution_MissionsList.isEmpty())
 	{
 		return true;
@@ -102,7 +106,7 @@ void MarsStation::Assign_mission()
 			Pair<Rover*, int> Pair_rover_inMission(ptr_rover, ptr_mission->get_Completion_Day());
 			rovers_InMission.insertSorted(Pair_rover_inMission);
 		}
-		else if (available_Mountaneous_RoversList.isEmpty() == false)
+		else if (available_Mountaneous_RoversList.isEmpty() == false && ptr_mission->get_failed() == false)
 		{
 			MountaneousRovers* ptr_rover;
 			Pair<MountaneousRovers*, double> pair_rover;
@@ -124,7 +128,7 @@ void MarsStation::Assign_mission()
 			Pair<Rover*, int> Pair_rover_inMission(ptr_rover, ptr_mission->get_Completion_Day());
 			rovers_InMission.insertSorted(Pair_rover_inMission);
 		}
-		else if (available_Polar_RoversList.isEmpty() == false)
+		else if (available_Polar_RoversList.isEmpty() == false && ptr_mission->get_failed() == false)
 		{
 			PolarRovers* ptr_rover;
 			Pair<PolarRovers*, double> pair_rover;
@@ -173,7 +177,7 @@ void MarsStation::Assign_mission()
 			Pair<Rover*, int> Pair_rover_inMission(ptr_rover, ptr_mission->get_Completion_Day());
 			rovers_InMission.insertSorted(Pair_rover_inMission);
 		}
-		else if (mountaneous_Rovers_InMaintenance.isEmpty() == false)
+		else if (mountaneous_Rovers_InMaintenance.isEmpty() == false && ptr_mission->get_failed() == false)
 		{
 			MountaneousRovers* ptr_rover;
 			Pair<MountaneousRovers*, int> pair_rover;
@@ -200,7 +204,7 @@ void MarsStation::Assign_mission()
 			Pair<Rover*, int> Pair_rover_inMission(ptr_rover, ptr_mission->get_Completion_Day());
 			rovers_InMission.insertSorted(Pair_rover_inMission);
 		}
-		else if (Polar_Rovers_InMaintenance.isEmpty() == false)
+		else if (Polar_Rovers_InMaintenance.isEmpty() == false && ptr_mission->get_failed() == false)
 		{
 			PolarRovers* ptr_rover;
 			Pair<PolarRovers*, int> pair_rover;
@@ -262,7 +266,7 @@ void MarsStation::Assign_mission()
 			Pair<Rover*, int> Pair_rover_inMission(ptr_rover, ptr_mission->get_Completion_Day());
 			rovers_InMission.insertSorted(Pair_rover_inMission);
 		}
-		else if (available_Emergency_RoversList.isEmpty() == false)
+		else if (available_Emergency_RoversList.isEmpty() == false && ptr_mission->get_failed() == false)
 		{
 			EmergencyRovers* ptr_rover;
 			Pair<EmergencyRovers*, double> pair_rover;
@@ -311,7 +315,7 @@ void MarsStation::Assign_mission()
 			Pair<Rover*, int> Pair_rover_inMission(ptr_rover, ptr_mission->get_Completion_Day());
 			rovers_InMission.insertSorted(Pair_rover_inMission);
 		}
-		else if (emergency_Rovers_InMaintenance.isEmpty() == false)
+		else if (emergency_Rovers_InMaintenance.isEmpty() == false && ptr_mission->get_failed() == false)
 		{
 			EmergencyRovers* ptr_rover;
 			Pair<EmergencyRovers*, int> pair_rover;
@@ -407,6 +411,10 @@ void MarsStation::Assign_mission()
 		}
 	}
 }
+
+
+
+
 void MarsStation::Cancel_mission(int id)
 {
 	LinkedQueue <Mountainous_missions*> temp;
@@ -456,7 +464,8 @@ void MarsStation::execute_Events()
 		}
 		eventsList.dequeue(e);
 		e->execute();
-		}
+	}
+
 }
 void MarsStation::check_For_Completed_Rovers_Missions()
 {
@@ -501,7 +510,7 @@ void MarsStation::check_For_Completed_Rovers_Missions()
 			r->incrementDistanceTravelled(m->get_Target_Location() * 2);
 
 
-			if (r && (r->getCmForCheckup() % N == 0))
+			if (r && r->getCmForCheckup() != 0 && (r->getCmForCheckup() % N == 0))
 			{
 				r->setdaysInCheckup(r->getCheckupD());
 				r->setCMforCheckup(0);
@@ -563,15 +572,40 @@ void MarsStation::check_For_Completed_Rovers_Missions()
 		}
 	}
 }
-
+void MarsStation::autoPromote()
+{
+	LinkedQueue <Mountainous_missions*> temp_available_Mountaneous_MissionList;
+	while (!available_Mountaneous_MissionList.isEmpty())
+	{
+		Mountainous_missions* m;
+		available_Mountaneous_MissionList.dequeue(m);
+		if (m->get_Waiting_Days() == AutoP)
+		{
+			Promote_mission(m->get_ID());
+		}
+		else
+		{
+			temp_available_Mountaneous_MissionList.enqueue(m);
+		}
+	}
+	while (!temp_available_Mountaneous_MissionList.isEmpty())
+	{
+		Mountainous_missions* m;
+		temp_available_Mountaneous_MissionList.dequeue(m);
+		available_Mountaneous_MissionList.enqueue(m);
+	}
+}
 void MarsStation::check_For_Failed_Missions()
 {
 	// Setting random seend and generating a random number
 	srand((unsigned)time(0));
-	int random = rand();
-
-	if (inExecution_MissionsList.getLength())
-		random = (random % (inExecution_MissionsList.getLength())*20) + 1;
+	int random  = -1;
+	float random_f;
+	if (!inExecution_MissionsList.isEmpty())
+	{
+		random_f = ((float)rand() / RAND_MAX) * inExecution_MissionsList.getLength() * 20;
+		random = (int)random_f;
+	}
 	
 	int i = 0;
 	Mission* m;
@@ -591,6 +625,7 @@ void MarsStation::check_For_Failed_Missions()
 			rovers_InMission.remove(i);
 			m->set_Completion_Day(0);
 			m->set_Execution_Days(0);
+			m->set_failed(true);
 			if (dynamic_cast<Emergency_missions*>(m))
 			{
 				Emergency_missions* n_m = dynamic_cast<Emergency_missions*>(m);
@@ -1315,11 +1350,7 @@ void MarsStation::getWaitingMissions(Node<int>*& e, Node<int>*& p, Node<int>*& m
 	LinkedQueue <Mountainous_missions*> temp_available_Mountaneous_MissionList;
 	LinkedQueue <Polar_missions*> temp_available_Polar_MissionList;
 
-	if (available_Emergency_MissionList.isEmpty())
-	{
-		e = new Node<int>(-1);
-	}
-	else
+	if (!available_Emergency_MissionList.isEmpty())	
 	{
 		while (!available_Emergency_MissionList.isEmpty())
 		{
@@ -1347,11 +1378,7 @@ void MarsStation::getWaitingMissions(Node<int>*& e, Node<int>*& p, Node<int>*& m
 		temp_available_Emergency_MissionList.dequeue(temp);
 		available_Emergency_MissionList.enqueue(temp);
 	}
-	if (available_Polar_MissionList.isEmpty())
-	{
-		p = new Node<int>(-1);
-	}
-	else
+	if (!available_Polar_MissionList.isEmpty())
 	{
 		while (!available_Polar_MissionList.isEmpty())
 		{
@@ -1378,11 +1405,7 @@ void MarsStation::getWaitingMissions(Node<int>*& e, Node<int>*& p, Node<int>*& m
 		temp_available_Polar_MissionList.dequeue(temp);
 		available_Polar_MissionList.enqueue(temp);
 	}
-	if (available_Mountaneous_MissionList.isEmpty())
-	{
-		m = new Node<int>(-1);
-	}
-	else
+	if (!available_Mountaneous_MissionList.isEmpty())
 	{
 		while (!available_Mountaneous_MissionList.isEmpty())
 		{
@@ -1427,16 +1450,7 @@ void MarsStation::getInExecutionMissionRover(Node<int>*& e_m, Node<int>*& e_r, N
 	Node<int>* tail_m_m = m_m;
 	Node<int>* tail_m_r = m_r;
 
-	if (rovers_InMission.isEmpty() || inExecution_MissionsList.isEmpty())
-	{
-		e_m = new Node<int>(-1);
-		e_r = new Node<int>(-1);
-		p_m = new Node<int>(-1);
-		p_r = new Node<int>(-1);
-		m_m = new Node<int>(-1);
-		m_r = new Node<int>(-1);
-	}
-	else
+	if (!rovers_InMission.isEmpty() && !inExecution_MissionsList.isEmpty())
 	{
 		for (int i = 0; i < rovers_InMission.getLength() && i < inExecution_MissionsList.getLength(); i++)
 		{
@@ -1445,76 +1459,84 @@ void MarsStation::getInExecutionMissionRover(Node<int>*& e_m, Node<int>*& e_r, N
 			{
 				temp_e_m = new Node<int>(m->get_ID());
 				temp_e_r = new Node<int>(rovers_InMission.getEntry(i).get_value()->getID());
+				if (!e_m && !e_r)
+				{
+
+					e_m =  temp_e_m;
+					tail_e_m = e_m;
+					e_r =  temp_e_r;
+					tail_e_r = e_r;
+
+					temp_e_m = nullptr;
+					temp_e_r = nullptr;
+
+				}
+				else
+				{
+					tail_e_m->setNext(temp_e_m);
+					tail_e_m = temp_e_m;
+					tail_e_r->setNext(temp_e_r);
+					tail_e_r = temp_e_r;
+
+					temp_e_m = nullptr;
+					temp_e_r = nullptr;
+				}
 			}
 			else if (dynamic_cast<Mountainous_missions*>(m))
 			{
 				temp_m_m = new Node<int>(m->get_ID());
 				temp_m_r = new Node<int>(rovers_InMission.getEntry(i).get_value()->getID());
+				if (!m_m && !m_r)
+				{
+					m_m = temp_m_m;
+					tail_m_m = m_m;
+					m_r =  temp_m_r;
+					tail_m_r = m_r;
+
+					temp_m_m = nullptr;
+					temp_m_r = nullptr;
+				}
+				else
+				{
+
+					tail_m_m->setNext(temp_m_m);
+					tail_m_m = temp_m_m;
+					tail_m_r->setNext(temp_m_r);
+					tail_m_r = temp_m_r;
+
+
+					temp_m_m = nullptr;
+					temp_m_r = nullptr;
+				}
 			}
 			else if (dynamic_cast<Polar_missions*>(m))
 			{
 				temp_p_m = new Node<int>(m->get_ID());
 				temp_p_r = new Node<int>(rovers_InMission.getEntry(i).get_value()->getID());
+				if (!p_m && !p_r)
+				{
+					p_m =  temp_p_m;
+					tail_p_m = p_m;
+					p_r = temp_p_r;
+					tail_p_r = p_r;
+					temp_p_m = nullptr;
+					temp_p_r = nullptr;
+
+				}
+				else
+				{
+					tail_p_m->setNext(temp_p_m);
+					tail_p_m = temp_p_m;
+					tail_p_r->setNext(temp_p_r);
+					tail_p_r = temp_p_r;
+
+					temp_p_m = nullptr;
+					temp_p_r = nullptr;
+				}
 			}
-			if (!e_m && !e_r)
-			{
-				
-				e_m = tail_e_m = temp_e_m;
-				e_r = tail_e_r = temp_e_r;
 			
-				temp_e_m = nullptr;
-				temp_e_r = nullptr;
+			 
 			
-			}
-			else
-			{
-				tail_e_m->setNext(temp_e_m);
-				tail_e_m = temp_e_m;
-				tail_e_r->setNext(temp_e_r);
-				tail_e_r = temp_e_r;
-
-				temp_e_m = nullptr;
-				temp_e_r = nullptr;
-			}
-			 if (!p_m && !p_r )
-			{
-				p_m = tail_p_m = temp_p_m;
-				p_r = tail_p_r = temp_p_r;
-				
-				temp_p_m = nullptr;
-				temp_p_r = nullptr;
-				
-			}
-			 else
-			 {
-				 tail_p_m->setNext(temp_p_m);
-				 tail_p_m = temp_p_m;
-				 tail_p_r->setNext(temp_p_r);
-				 tail_p_r = temp_p_r;
-
-				 temp_p_m = nullptr;
-				 temp_p_r = nullptr;
-			 }
-			 if (!m_m && !m_r)
-			{
-				m_m = tail_m_m = temp_m_m;
-				m_r = tail_m_r = temp_m_r;
-
-				temp_m_m = nullptr;
-				temp_m_r = nullptr;
-			}
-			else
-			{
-						
-				tail_m_m->setNext(temp_m_m);
-				tail_m_m = temp_m_m;
-				tail_m_r->setNext(temp_m_r);
-				tail_m_r = temp_m_r;
-
-				
-				temp_m_m = nullptr;
-				temp_m_r = nullptr;
-			}
 		}
 	}
 }
@@ -1530,18 +1552,15 @@ void MarsStation::getAvailableRover(Node<int>*& e, Node<int>*& p, Node<int>*& m)
 	Node<int>* tail_p = p;
 
 	
-	if (available_Emergency_RoversList.isEmpty())
-	{
-		e = new Node<int>(-1);
-	}
-	else 
+	if (!available_Emergency_RoversList.isEmpty())
 	{
 		for (int i = 0; i < available_Emergency_RoversList.getLength(); i++)
 		{
 			temp_e = new Node<int>(available_Emergency_RoversList.getEntry(i).get_value()->getID());
 			if (!e)
 			{
-				tail_e = e = temp_e;
+				e = temp_e;
+				tail_e = e;
 			}
 			else
 			{
@@ -1553,11 +1572,7 @@ void MarsStation::getAvailableRover(Node<int>*& e, Node<int>*& p, Node<int>*& m)
 		}
 		
 	}
-	if (available_Polar_RoversList.isEmpty())
-	{
-		p = new Node<int>(-1);
-	}
-	else
+	if (!available_Polar_RoversList.isEmpty())
 	{
 		for (int i = 0; i < available_Polar_RoversList.getLength(); i++)
 		{
@@ -1565,7 +1580,8 @@ void MarsStation::getAvailableRover(Node<int>*& e, Node<int>*& p, Node<int>*& m)
 			
 			if (!p)
 			{
-				tail_p = p = temp_p;
+				p = temp_p;
+				tail_p = p;
 			}
 			else
 			{
@@ -1575,19 +1591,16 @@ void MarsStation::getAvailableRover(Node<int>*& e, Node<int>*& p, Node<int>*& m)
 			}
 		}
 	}
-	if (available_Mountaneous_RoversList.isEmpty())
-	{
-		m = new Node<int>(-1);
-	}
-	else
+	if (!available_Mountaneous_RoversList.isEmpty())
 	{
 		for (int i = 0; i < available_Mountaneous_RoversList.getLength(); i++)
 		{
 			temp_m = new Node<int>(available_Mountaneous_RoversList.getEntry(i).get_value()->getID());
 
-			if (!p)
+			if (!m)
 			{
-				tail_m = m = temp_m;
+				m = temp_m;
+				tail_m = m;
 			}
 			else
 			{
@@ -1610,13 +1623,7 @@ void MarsStation::getInCheckupRover(Node<int>*& e, Node<int>*& p, Node<int>*& m)
 	Node<int>* tail_p= p;
 
 
-	if (rovers_InCheckup.isEmpty())
-	{
-		e = new Node<int>(-1);
-		p = new Node<int>(-1);
-		m = new Node<int>(-1);
-	}
-	else
+	if (!rovers_InCheckup.isEmpty())
 	{
 		for (int i = 0; i < rovers_InCheckup.getLength() ; i++)
 		{
@@ -1624,54 +1631,57 @@ void MarsStation::getInCheckupRover(Node<int>*& e, Node<int>*& p, Node<int>*& m)
 			if (dynamic_cast<EmergencyRovers*>(m_r))
 			{
 				temp_e = new Node<int>(m_r->getID());
+
+				if (!e)
+				{
+					e = tail_e = temp_e;
+					temp_e = nullptr;
+				}
+				else
+				{
+					tail_e->setNext(temp_e);
+					tail_e = temp_e;
+					temp_e = nullptr;
+				}
 			}
 			else if (dynamic_cast<MountaneousRovers*>(m_r))
 			{
 				temp_m = new Node<int>(m_r->getID());
+				if (!p)
+				{
+					p = tail_p = temp_p;
+					temp_p = nullptr;
+
+				}
+				else
+				{
+					tail_p->setNext(temp_p);
+					tail_p = temp_p;
+
+					temp_p = nullptr;
+				}
 			}
 			else if (dynamic_cast<PolarRovers*>(m_r))
 			{
 				temp_p = new Node<int>(m_r->getID());
+
+
+
+				if (!m)
+				{
+					m = tail_m = temp_m;
+
+					temp_m = nullptr;
+				}
+				else
+				{
+					tail_m->setNext(temp_m);
+					tail_m = temp_m;
+					temp_m = nullptr;
+				}
 			}
 
-			if (!e )
-			{
-				e = tail_e = temp_e;
-				temp_e = nullptr;
-			}
-			else
-			{
-				tail_e->setNext(temp_e);
-				tail_e = temp_e;
-				temp_e = nullptr;
-			}
 
-			 if (!p )
-			 {
-				p = tail_p = temp_p;
-				temp_p = nullptr;
-				
-			 }
-			 else
-			 {
-				 tail_p->setNext(temp_p);
-				 tail_p = temp_p;
-
-				 temp_p = nullptr;
-			 }
-
-			 if (!m)
-			 {
-				m = tail_m = temp_m;
-
-				temp_m = nullptr;
-			 }
-			 else
-			 {		
-				tail_m->setNext(temp_m);
-				tail_m = temp_m;
-				temp_m = nullptr;
-			 }
 		}
 	}
 }
@@ -1686,13 +1696,7 @@ void MarsStation::getCompletedMission(Node<int>*& e, Node<int>*& p, Node<int>*& 
 	Node<int>* tail_m = m;
 	Node<int>* tail_p = p;
 
-	if (completed_MissionsList.isEmpty())
-	{
-		e = new Node<int>(-1);
-		p = new Node<int>(-1);
-		m = new Node<int>(-1);
-    }
-	else 
+	if (!completed_MissionsList.isEmpty())
 	{
 		
 		for (int i = 0; i < completed_MissionsList.getLength(); i++)
@@ -1701,48 +1705,47 @@ void MarsStation::getCompletedMission(Node<int>*& e, Node<int>*& p, Node<int>*& 
 				if (dynamic_cast<Emergency_missions*>(mm))
 				{
 					temp_e = new Node<int>(mm->get_ID());
+
+					if (!e)
+					{
+						e = tail_e = temp_e;
+					}
+					else
+					{
+						tail_e->setNext(temp_e);
+						tail_e = temp_e;
+						temp_e = nullptr;
+					}
 				}
 				else if (dynamic_cast<Polar_missions*>(mm))
 				{
 					temp_p = new Node<int>(mm->get_ID());
+					if (!p)
+					{
+						p = tail_p = temp_p;
+					}
+					else
+					{
+						tail_p->setNext(temp_p);
+						tail_p = temp_p;
+						temp_p = nullptr;
+					}
 				}
 				else if(dynamic_cast<Mountainous_missions*>(mm))
 				{
 					temp_m = new Node<int>(mm->get_ID());
+					if (!m)
+					{
+						m = tail_m = temp_m;
+					}
+					else
+					{
+						tail_m->setNext(temp_m);
+						tail_m = temp_m;
+						temp_m = nullptr;
+					}
 				}
 
-				if (!e)
-				{
-					e = tail_e = temp_e;
-				}
-				else
-				{
-					tail_e->setNext(temp_e);
-					tail_e = temp_e;
-					temp_e = nullptr;
-				}
-
-				if (!p)
-				{
-					p = tail_p = temp_p;
-				}
-				else
-				{
-					tail_p->setNext(temp_p);
-					tail_p = temp_p;
-					temp_p = nullptr;
-				}
-
-				if (!m)
-				{
-					m = tail_m = temp_m;
-				}
-				else
-				{
-					tail_m->setNext(temp_m);
-					tail_m = temp_m;
-					temp_m = nullptr;
-				}
 		}
 		
 	}
@@ -1759,18 +1762,15 @@ void MarsStation::getRoversInMaintenance(Node<int>*& e, Node<int>*& p, Node<int>
 	Node<int>* tail_p = p;
 
 
-	if (emergency_Rovers_InMaintenance.isEmpty())
-	{
-		e = new Node<int>(-1);
-	}
-	else
+	if (!emergency_Rovers_InMaintenance.isEmpty())
 	{
 		for (int i = 0; i < emergency_Rovers_InMaintenance.getLength(); i++)
 		{
 			temp_e = new Node<int>(emergency_Rovers_InMaintenance.getEntry(i).get_value()->getID());
 			if (!e)
 			{
-				tail_e = e = temp_e;
+				 e = temp_e;
+				 tail_e = e;
 			}
 			else
 			{
@@ -1782,11 +1782,7 @@ void MarsStation::getRoversInMaintenance(Node<int>*& e, Node<int>*& p, Node<int>
 		}
 
 	}
-	if (Polar_Rovers_InMaintenance.isEmpty())
-	{
-		p = new Node<int>(-1);
-	}
-	else
+	if (!Polar_Rovers_InMaintenance.isEmpty())
 	{
 		for (int i = 0; i < Polar_Rovers_InMaintenance.getLength(); i++)
 		{
@@ -1794,7 +1790,8 @@ void MarsStation::getRoversInMaintenance(Node<int>*& e, Node<int>*& p, Node<int>
 
 			if (!p)
 			{
-				tail_p = p = temp_p;
+				 p = temp_p;
+				 tail_p = p;
 			}
 			else
 			{
@@ -1804,19 +1801,16 @@ void MarsStation::getRoversInMaintenance(Node<int>*& e, Node<int>*& p, Node<int>
 			}
 		}
 	}
-	if (mountaneous_Rovers_InMaintenance.isEmpty())
-	{
-		m = new Node<int>(-1);
-	}
-	else
+	if (!mountaneous_Rovers_InMaintenance.isEmpty())
 	{
 		for (int i = 0; i < mountaneous_Rovers_InMaintenance.getLength(); i++)
 		{
 			temp_m = new Node<int>(mountaneous_Rovers_InMaintenance.getEntry(i).get_value()->getID());
 
-			if (!p)
+			if (!m)
 			{
-				tail_m = m = temp_m;
+				 m = temp_m;
+				 tail_m = m;
 			}
 			else
 			{
@@ -1828,14 +1822,4 @@ void MarsStation::getRoversInMaintenance(Node<int>*& e, Node<int>*& p, Node<int>
 	}
 }
 
-//=========================================== end of methods ===========================================
 
-
-////temp function to be deleted when hany deliever execute days function
-// ////////////////
-//                              Hany finished the function
-// ////////////////
-//bool MarsStation::executeDays()
-//{
-//	return true;
-//}
