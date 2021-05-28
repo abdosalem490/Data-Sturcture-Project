@@ -49,22 +49,30 @@ void UI::Execute(int choice) {
 
 		// ADD CODE OF INTERACTIVE UI.
 		int n;
-
-		//the condition of the while loop to be modified
 		cout << "Press enter to proceed from a day to the next." << endl;
 		while (!pStation->Execution())
 		{
 			do {
 				n = cin.get();
 			} while (n != (int)'\n');
-			
+		
 			printDay();
 			printWaitingMissions();
-			//printInExecutionMissionRovers();
-			//printAvailableRovers();
-			//printInCheckupRovers();
-			//printCompletedMission();
+			printInExecutionMissionRovers();
+			printAvailableRovers();
+			printInCheckupRovers();
+			printCompletedMission();
+			printRoversInMaintenance();
+			cout << "--------------------------------------------------------------------" << endl;
 		}
+		printDay();
+		printWaitingMissions();
+		printInExecutionMissionRovers();
+		printAvailableRovers();
+		printInCheckupRovers();
+		printCompletedMission();
+		printRoversInMaintenance();
+		cout << "--------------------------------------------------------------------" << endl;
 	}
 	else if (choice == 2) 
 	{
@@ -76,11 +84,22 @@ void UI::Execute(int choice) {
 			std::this_thread::sleep_for(std::chrono::seconds(1));
 			printDay();
 			printWaitingMissions();
-			//printInExecutionMissionRovers();
-			//printAvailableRovers();
-			//printInCheckupRovers();
-			//printCompletedMission();
+			printInExecutionMissionRovers();
+			printAvailableRovers();
+			printInCheckupRovers();
+			printCompletedMission();
+			printRoversInMaintenance();
+			cout << "--------------------------------------------------------------------" << endl;
 		}
+		std::this_thread::sleep_for(std::chrono::seconds(1));
+		printDay();
+		printWaitingMissions();
+		printInExecutionMissionRovers();
+		printAvailableRovers();
+		printInCheckupRovers();
+		printCompletedMission();
+		printRoversInMaintenance();
+		cout << "--------------------------------------------------------------------" << endl;
 	}
 	else {
 
@@ -114,7 +133,7 @@ void UI::printWaitingMissions()
 	Node<int>* temp_m = m;
 
 	int counter = 0;
-	if (temp_e->getItem() != -1)
+	if (temp_e)
 	{
 		while (temp_e)
 		{
@@ -122,7 +141,7 @@ void UI::printWaitingMissions()
 			temp_e = temp_e->getNext();
 		}
 	}
-	if (temp_p->getItem() != -1)
+	if (temp_p )
 	{
 		while (temp_p)
 		{
@@ -130,7 +149,7 @@ void UI::printWaitingMissions()
 			temp_p = temp_p->getNext();
 		}
 	}
-	if (temp_m->getItem() != -1)
+	if (temp_m)
 	{
 		while (temp_m)
 		{
@@ -144,42 +163,45 @@ void UI::printWaitingMissions()
 	cout << counter;
 
 	cout << " Waiting Missions : ";
-	if (temp_e && temp_e->getItem() != -1)
+	if (temp_e)
 	{
 		cout << "[ ";
 		while (temp_e)
 		{
 			cout << temp_e->getItem();
+			if(temp_e->getNext())
 			cout << " , ";
 			temp_e = temp_e->getNext();
 		}
 		cout << " ] ";
 	}
 	
-	if (temp_p && temp_p->getItem() != -1)
+	if (temp_p)
 	{
 		cout << "( ";
 		while (temp_p)
 		{
 			cout << temp_p->getItem();
+			if (temp_p->getNext())
 			cout << " , ";
 			temp_p = temp_p->getNext();
 		}
 		cout << " ) ";
 	}
 
-	if (temp_m && temp_m->getItem() != -1)
+	if (temp_m)
 	{
 		cout << "{ ";
 		while (temp_m)
 		{
 			cout << temp_m->getItem();
+			if (temp_m->getNext())
 			cout << " , ";
 			temp_m = temp_m->getNext();
 		}
-		cout << " } " << endl;
+		cout << " } " ;
 	}
-	cout << "--------------------------------------------------------------------" << endl;
+	cout << endl;
 }
 
 void UI::printInExecutionMissionRovers()
@@ -199,7 +221,7 @@ void UI::printInExecutionMissionRovers()
 	Node<int>* temp_m_r = m_r;
 
 	int counter = 0;
-	if (temp_e_m->getItem() != -1)
+	if (temp_e_m)
 	{
 		while (temp_e_m)
 		{
@@ -207,7 +229,7 @@ void UI::printInExecutionMissionRovers()
 			temp_e_m = temp_e_m->getNext();
 		}
 	}
-	if (temp_p_m->getItem() != -1)
+	if (temp_p_m )
 	{
 		while (temp_p_m)
 		{
@@ -215,7 +237,7 @@ void UI::printInExecutionMissionRovers()
 			temp_p_m = temp_p_m->getNext();
 		}
 	}
-	if (temp_m_m->getItem() != -1)
+	if (temp_m_m )
 	{
 		while (temp_m_m)
 		{
@@ -229,7 +251,7 @@ void UI::printInExecutionMissionRovers()
 
 	cout << counter;
 	cout << " In-Execution Missions/Rovers : ";
-	if (temp_e_m->getItem() != -1 && temp_e_r->getItem() != -1)
+	if (temp_e_m && temp_e_r )
 	{
 		cout << " [ ";
 		while (temp_e_m && temp_e_r)
@@ -237,13 +259,14 @@ void UI::printInExecutionMissionRovers()
 			cout << temp_e_m->getItem();
 			cout << " / ";
 			cout << temp_e_r->getItem();
+			if (temp_e_m->getNext())
 			cout << " , ";
 			temp_e_m = temp_e_m->getNext();
 			temp_e_r = temp_e_r->getNext();
 		}
 		cout << " ] ";
 	}
-	if (temp_p_m->getItem() != -1 && temp_p_r->getItem() != -1)
+	if (temp_p_m && temp_p_r )
 	{
 		cout << " ( ";
 		while (temp_p_m && temp_p_r)
@@ -251,13 +274,14 @@ void UI::printInExecutionMissionRovers()
 			cout << temp_p_m->getItem();
 			cout << " / ";
 			cout << temp_p_r->getItem();
+			if (temp_p_m->getNext())
 			cout << " , ";
 			temp_p_m = temp_p_m->getNext();
 			temp_p_r = temp_p_r->getNext();
 		}
 		cout << " ) ";
 	}
-	if (temp_m_m->getItem() != -1 && temp_m_r->getItem() != -1)
+	if (temp_m_m && temp_m_r )
 	{
 		cout << " { ";
 		while (temp_m_m && temp_m_r)
@@ -265,13 +289,14 @@ void UI::printInExecutionMissionRovers()
 			cout << temp_m_m->getItem();
 			cout << " / ";
 			cout << temp_m_r->getItem();
+			if (temp_m_r->getNext())
 			cout << " , ";
 			temp_m_m = temp_m_m->getNext();
 			temp_m_r = temp_m_r->getNext();
 		}
-		cout << " } " << endl;
+		cout << " } " ;
 	}
-	cout << "--------------------------------------------------------------------" << endl;
+	cout << endl;
 }
 
 void UI::printAvailableRovers()
@@ -285,7 +310,7 @@ void UI::printAvailableRovers()
 	Node<int>* temp_m = m;
 
 	int counter = 0;
-	if (temp_e->getItem() != -1)
+	if (temp_e )
 	{
 		while (temp_e)
 		{
@@ -293,7 +318,7 @@ void UI::printAvailableRovers()
 			temp_e = temp_e->getNext();
 		}
 	}
-	if (temp_p->getItem() != -1)
+	if (temp_p )
 	{
 		while (temp_p)
 		{
@@ -301,7 +326,7 @@ void UI::printAvailableRovers()
 			temp_p = temp_p->getNext();
 		}
 	}
-	if (temp_m->getItem() != -1)
+	if (temp_m )
 	{
 		while (temp_m)
 		{
@@ -315,40 +340,43 @@ void UI::printAvailableRovers()
 	cout << counter;
 
 	cout << " Available Rovers : ";
-	if (temp_e && temp_e->getItem() != -1)
+	if (temp_e )
 	{
 		cout << " [ ";
 		while (temp_e)
 		{
 			cout << temp_e->getItem();
+			if (temp_e->getNext())
 			cout << " , ";
 			temp_e = temp_e->getNext();
 		}
 		cout << " ] ";
 	}
-	if (temp_p && temp_p->getItem() != -1)
+	if (temp_p )
 	{
 		cout << "( ";
 		while (temp_p)
 		{
 			cout << temp_p->getItem();
+			if (temp_p->getNext())
 			cout << " , ";
 			temp_p = temp_p->getNext();
 		}
 		cout << " ) ";
 	}
-	if (temp_m && temp_m->getItem() != -1)
+	if (temp_m )
 	{
 		cout << "{ ";
 		while (temp_m)
 		{
 			cout << temp_m->getItem();
+			if (temp_m->getNext())
 			cout << " , ";
 			temp_m = temp_m->getNext();
 		}
-		cout << " } " << endl;
+		cout << " } " ;
 	}
-	cout << "--------------------------------------------------------------------" << endl;
+	cout << endl;
 }
 
 void UI::printInCheckupRovers()
@@ -362,7 +390,7 @@ void UI::printInCheckupRovers()
 	Node<int>* temp_m = m;
 
 	int counter = 0;
-	if (temp_e->getItem() != -1)
+	if (temp_e )
 	{
 		while (temp_e)
 		{
@@ -370,7 +398,7 @@ void UI::printInCheckupRovers()
 			temp_e = temp_e->getNext();
 		}
 	}
-	if (temp_p->getItem() != -1)
+	if (temp_p )
 	{
 		while (temp_p)
 		{
@@ -378,7 +406,7 @@ void UI::printInCheckupRovers()
 			temp_p = temp_p->getNext();
 		}
 	}
-	if (temp_m->getItem() != -1)
+	if (temp_m )
 	{
 		while (temp_m)
 		{
@@ -392,40 +420,43 @@ void UI::printInCheckupRovers()
 
 	cout << counter;
 	cout << " In-Checkup Rovers : ";
-	if (temp_e && temp_e->getItem() != -1)
+	if (temp_e )
 	{
 		cout << " [ ";
 		while (temp_e)
 		{
 			cout << temp_e->getItem();
+			if (temp_e->getNext())
 			cout << " , ";
 			temp_e = temp_e->getNext();
 		}
 		cout << " ] ";
 	}
-	if (temp_p && temp_p->getItem() != -1)
+	if (temp_p )
 	{
 		cout << "( ";
 		while (temp_p)
 		{
 			cout << temp_p->getItem();
+			if (temp_p->getNext())
 			cout << " , ";
 			temp_p = temp_p->getNext();
 		}
 		cout << " ) ";
 	}
-	if (temp_m && temp_m->getItem() != -1)
+	if (temp_m )
 	{
 		cout << "{ ";
 		while (temp_m)
 		{
 			cout << temp_m->getItem();
+			if (temp_m->getNext())
 			cout << " , ";
 			temp_m = temp_m->getNext();
 		}
-		cout << " } " << endl;
+		cout << " } " ;
 	}
-	cout << "--------------------------------------------------------------------" << endl;
+	cout << endl;
 }
 
 void UI::printCompletedMission()
@@ -439,7 +470,7 @@ void UI::printCompletedMission()
 	Node<int>* temp_m = m;
 
 	int counter = 0;
-	if (temp_e->getItem() != -1)
+	if (temp_e )
 	{
 		while (temp_e)
 		{
@@ -447,7 +478,7 @@ void UI::printCompletedMission()
 			temp_e = temp_e->getNext();
 		}
 	}
-	if (temp_p->getItem() != -1)
+	if (temp_p )
 	{
 		while (temp_p)
 		{
@@ -455,7 +486,7 @@ void UI::printCompletedMission()
 			temp_p = temp_p->getNext();
 		}
 	}
-	if (temp_m->getItem() != -1)
+	if (temp_m )
 	{
 		while (temp_m)
 		{
@@ -469,40 +500,43 @@ void UI::printCompletedMission()
 	cout << counter;
 
 	cout << " Completed Missions : ";
-	if (temp_e && temp_e->getItem() != -1)
+	if (temp_e )
 	{
 		cout << " [ ";
 		while (temp_e)
 		{
 			cout << temp_e->getItem();
+			if (temp_e->getNext())
 			cout << " , ";
 			temp_e = temp_e->getNext();
 		}
 		cout << " ] ";
 	}
-	if (temp_p && temp_p->getItem() != -1)
+	if (temp_p )
 	{
 		cout << "( ";
 		while (temp_p)
 		{
 			cout << temp_p->getItem();
+			if (temp_p->getNext())
 			cout << " , ";
 			temp_p = temp_p->getNext();
 		}
 		cout << " ) ";
 	}
-	if (temp_m && temp_m->getItem() != -1)
+	if (temp_m )
 	{
 		cout << "{ ";
 		while (temp_m)
 		{
 			cout << temp_m->getItem();
+			if (temp_m->getNext())
 			cout << " , ";
 			temp_m = temp_m->getNext();
 		}
-		cout << " } " << endl;
+		cout << " } " ;
 	}
-	cout << "--------------------------------------------------------------------" << endl;
+	cout << endl;
 }
 
 void UI::printRoversInMaintenance()
@@ -516,7 +550,7 @@ void UI::printRoversInMaintenance()
 	Node<int>* temp_m = m;
 
 	int counter = 0;
-	if (temp_e->getItem() != -1)
+	if (temp_e )
 	{
 		while (temp_e)
 		{
@@ -524,7 +558,7 @@ void UI::printRoversInMaintenance()
 			temp_e = temp_e->getNext();
 		}
 	}
-	if (temp_p->getItem() != -1)
+	if (temp_p )
 	{
 		while (temp_p)
 		{
@@ -532,7 +566,7 @@ void UI::printRoversInMaintenance()
 			temp_p = temp_p->getNext();
 		}
 	}
-	if (temp_m->getItem() != -1)
+	if (temp_m )
 	{
 		while (temp_m)
 		{
@@ -546,39 +580,42 @@ void UI::printRoversInMaintenance()
 	cout << counter;
 
 	cout << " In-Maintenance Rovers : ";
-	if (temp_e && temp_e->getItem() != -1)
+	if (temp_e )
 	{
 		cout << " [ ";
 		while (temp_e)
 		{
 			cout << temp_e->getItem();
+			if (temp_e->getNext())
 			cout << " , ";
 			temp_e = temp_e->getNext();
 		}
 		cout << " ] ";
 	}
-	if (temp_p && temp_p->getItem() != -1)
+	if (temp_p )
 	{
 		cout << "( ";
 		while (temp_p)
 		{
 			cout << temp_p->getItem();
+			if (temp_p->getNext())
 			cout << " , ";
 			temp_p = temp_p->getNext();
 		}
 		cout << " ) ";
 	}
-	if (temp_m && temp_m->getItem() != -1)
+	if (temp_m )
 	{
 		cout << "{ ";
 		while (temp_m)
 		{
 			cout << temp_m->getItem();
+			if (temp_m->getNext())
 			cout << " , ";
 			temp_m = temp_m->getNext();
 		}
-		cout << " } " << endl;
+		cout << " } " ;
 	}
-	cout << "--------------------------------------------------------------------" << endl;
+	cout << endl;
 }
 

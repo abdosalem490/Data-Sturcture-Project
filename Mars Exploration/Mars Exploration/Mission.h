@@ -9,6 +9,7 @@ class Mission
 	int Significance;
 	int Mission_Duration;
 	double Target_Location;
+	bool Failed;
 public:
 	//Default constructor
 	Mission(int id = -1, int Formulation_Day = -1, int Significance = -1, int Mission_Duration = -1, double Target_Location = -1);
@@ -21,6 +22,7 @@ public:
 	virtual void set_Significance(int d);
 	virtual void set_Mission_Duration(int d);
 	virtual void set_Target_Location(double t);
+	virtual void set_failed(bool f);
 	//Getting the data
 	virtual int get_ID();
 	virtual int get_Formulation_Day();
@@ -30,5 +32,6 @@ public:
 	virtual int get_Significance();
 	virtual int get_Mission_Duration();
 	virtual double get_Target_Location();
+	virtual bool get_failed();
 };
 

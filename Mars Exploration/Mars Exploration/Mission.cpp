@@ -1,6 +1,7 @@
 #include "Mission.h"
 Mission::Mission(int id, int Formulation_Day, int Significance, int Mission_Duration, double Target_Location)
 {
+	Failed = false;
 	set_ID(id);
 	set_Completion_Day(-1);
 	set_Execution_Days(-1);
@@ -42,6 +43,10 @@ void Mission::set_Target_Location(double t)
 {
 	Target_Location = (t >= 0) ? t : 0;
 }
+void Mission::set_failed(bool f)
+{
+	Failed = f;
+}
 int Mission::get_ID()
 {
 	return ID;
@@ -73,4 +78,8 @@ int Mission::get_Mission_Duration()
 double Mission::get_Target_Location()
 {
 	return Target_Location;
+}
+bool Mission::get_failed()
+{
+	return Failed;
 }
