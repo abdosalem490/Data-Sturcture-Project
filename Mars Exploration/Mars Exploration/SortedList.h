@@ -11,35 +11,29 @@ private:
 	Node<ItemType>* headPtr; 
 
 	Node<ItemType>* getNodeBefore(const ItemType& anEntry) const {
-		Node<ItemType>* ptr;
-		if (headPtr != nullptr)
-			ptr = headPtr->getNext();
-		else
-			ptr = nullptr;
-		Node<ItemType>* prev = headPtr;
+		Node<ItemType>* p1;
+		Node<ItemType>* p2;
 		if (headPtr == nullptr)
 			return nullptr;
-		if (headPtr->getNext() == nullptr)
+		else
 		{
-			if (headPtr->getItem() == anEntry)
-				return nullptr;
-			else return nullptr;
-		}
-		if (prev->getItem() == anEntry)
-		{
-			return nullptr;
-		}
-		while (ptr != nullptr)
-		{
-			if (ptr->getItem() == anEntry)
+			if (!headPtr->getNext())
 			{
-				return prev;
+				return headPtr;
 			}
-			prev = ptr;
-			ptr = ptr->getNext();
-
+			else
+			{
+				p1 = headPtr;
+				p2 = headPtr->getNext();
+				while (p2 && p2->getItem() < anEntry)
+				{
+					p1 = p2;
+					p2 = p2->getNext();
+				}
+				return p1;
+			}
 		}
-		return nullptr;
+		
 	}
 	
 	Node<ItemType>* getNodeAt(int position) const {
@@ -76,7 +70,15 @@ public:
 
 		Node<ItemType>* newNodePtr = new Node<ItemType>(newEntry);
 		Node<ItemType>* prevPtr = getNodeBefore(newEntry);
+		
 		if (isEmpty() || (prevPtr == nullptr)) // Add at beginning
+		{
+			/*newNodePtr->setNext(headPtr);
+			headPtr = newNodePtr;*/
+			headPtr = newNodePtr;
+			headPtr->setNext(nullptr);
+		}
+		else if (headPtr->getItem() > newEntry)
 		{
 			newNodePtr->setNext(headPtr);
 			headPtr = newNodePtr;

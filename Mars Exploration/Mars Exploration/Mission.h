@@ -3,6 +3,9 @@ class Mission
 {
 	int ID;
 	int Formulation_Day;
+	// A variable to stor the day on which a mission failed. 
+	// (Will be helpful in calculating the completion day, later.)
+	int failedDay;
 	int Waiting_Days;
 	int Execution_Days;
 	int Completion_Day;
@@ -33,5 +36,8 @@ public:
 	virtual int get_Mission_Duration();
 	virtual double get_Target_Location();
 	virtual bool get_failed();
+
+	void set_failed_day(int d);
+	int get_failed_day() const;
 };
 
