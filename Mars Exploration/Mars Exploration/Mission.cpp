@@ -83,3 +83,9 @@ bool Mission::get_failed()
 {
 	return Failed;
 }
+void Mission::set_failed_day(int d) {
+	failedDay = d;
+}
+int Mission::get_failed_day() const {
+	return failedDay;
+}

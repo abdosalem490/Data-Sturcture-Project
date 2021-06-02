@@ -44,14 +44,18 @@ bool LinkedpriorityQueue<T, M>::enqueue(const Pair<T, M>& temp)
 		}
 		Node<Pair<T, M>>* p2 = Head;
 		Node<Pair<T, M>>* p1 = Head->getNext();
-		if (Head->getItem().getPriority() == temp.getPriority() && Head->getNext()->getItem().getPriority() != temp.getPriority())
+		/*if ()
+		{
+
+		}*/
+		/*if (Head->getItem().getPriority() == temp.getPriority() && Head->getNext()->getItem().getPriority() != temp.getPriority())
 		{
 			s->setNext(p1);
 			p2->setNext(s);
 			s = nullptr;
 			return true;
-		}
-		else if (Head->getItem().getPriority() < temp.getPriority())
+		}*/
+		if (Head->getItem().getPriority() < temp.getPriority())
 		{
 			s->setNext(Head);
 			Head = s;
