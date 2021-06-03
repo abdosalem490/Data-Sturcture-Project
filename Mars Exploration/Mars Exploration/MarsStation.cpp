@@ -25,17 +25,17 @@ bool MarsStation::Execution()
 
 	execute_Events();
 
-	//check_For_Failed_Missions();
+	check_For_Failed_Missions();
 
 	check_For_Completed_Rovers_Missions();
 
-	//check_for_rovers_into_maintainance();
+	check_for_rovers_into_maintainance();
 
 	//check_for_rovers_outta_maintainance();
 
     check_To_Get_From_Checkup();
 
-	//autoPromote();
+	autoPromote();
 
 	Assign_mission();
 
@@ -590,6 +590,7 @@ void MarsStation::check_For_Completed_Rovers_Missions()
 			{
 				r->setdaysInCheckup(r->getCheckupD());
 				r->setCMforCheckup(0);
+				//r->setCMforCheckup(r->getCmForCheckup() + 1);
 				Pair<Rover*, int>p2_new(r, r->getdaysInCheckup());
 				rovers_InCheckup.insertSorted(p2_new);
 			}
@@ -661,9 +662,9 @@ void MarsStation::autoPromote()
 			n_m->set_Waiting_Days(m->get_Waiting_Days());
 			n_m->set_failed(m->get_failed());
 			n_m->setAutoPromoted(true);
+			//cout << "test";
 			Add_mission(n_m);
 			n_m = nullptr;
-
 		}
 		else
 		{
@@ -680,8 +681,9 @@ void MarsStation::autoPromote()
 void MarsStation::check_For_Failed_Missions()
 {
 	// Generating a random float number between 0 and 1 to act as the probability of mission faliure.
-	float random = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
 	
+	float random = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+
 	
 	int i = 0;
 	Mission* m;
@@ -692,10 +694,9 @@ void MarsStation::check_For_Failed_Missions()
 		Pair<Mission*, int>p1 = inExecution_MissionsList.getEntry(i);
 		m = p1.get_value();
 
-		// There's a slim 10% chance the mission will fail, ONLY IF it has not failed before.
-		if (random < 0.1 && random > 0 && m->get_failed() == false)
+		// There's a slim 0.5% chance the mission will fail, ONLY IF it has not failed before.
+		if (random < 0.001 && random > 0 && m->get_failed() == false )
 		{
-
 			//std::cout << "Mission " << m->get_ID() << " failed on day " << today << std::endl;
 			Pair<Rover*, int> p1 = rovers_InMission.getEntry(i);
 
@@ -706,7 +707,7 @@ void MarsStation::check_For_Failed_Missions()
 			// Removing missions and rovers from the in execution list.
 			inExecution_MissionsList.remove(i);
 			rovers_InMission.remove(i);
-
+			i--;
 			// Setting completion day, execution day and failed flag for the mission.
 			m->set_Completion_Day(0);
 			m->set_Execution_Days(0);
@@ -845,6 +846,7 @@ void MarsStation::check_for_rovers_outta_maintainance() {
 		EmergencyRovers* r = p.get_value();
 		if (r->getdaysInMaintenance() == 0) {
 			emergency_Rovers_InMaintenance.remove(i);
+			i--;
 			Pair<EmergencyRovers*, double> p(r, r->getSpeed());
 			available_Emergency_RoversList.insertSorted(p);
 		}
@@ -856,6 +858,7 @@ void MarsStation::check_for_rovers_outta_maintainance() {
 		MountaneousRovers* r = p.get_value();
 		if (r->getdaysInMaintenance() == 0) {
 			emergency_Rovers_InMaintenance.remove(i);
+			i--;
 			Pair<MountaneousRovers*, double> p(r, r->getSpeed());
 			available_Mountaneous_RoversList.insertSorted(p);
 		}
@@ -865,6 +868,7 @@ void MarsStation::check_for_rovers_outta_maintainance() {
 		PolarRovers* r = p.get_value();
 		if (r->getdaysInMaintenance() == 0) {
 			emergency_Rovers_InMaintenance.remove(i);
+			i--;
 			Pair<PolarRovers*, double> p(r, r->getSpeed());
 			available_Polar_RoversList.insertSorted(p);
 		}
@@ -885,6 +889,7 @@ void MarsStation::check_To_Get_From_Checkup()
 			{
 				EmergencyRovers* n_r = dynamic_cast<EmergencyRovers*>(r);
 				rovers_InCheckup.remove(i);
+				i--;
 				Pair<EmergencyRovers*, double>p(n_r, r->getSpeed());
 				available_Emergency_RoversList.insertSorted(p);
 			}
@@ -892,6 +897,7 @@ void MarsStation::check_To_Get_From_Checkup()
 			{
 				MountaneousRovers* n_r = dynamic_cast<MountaneousRovers*>(r);
 				rovers_InCheckup.remove(i);
+				i--;
 				Pair<MountaneousRovers*, double>p(n_r, r->getSpeed());
 				available_Mountaneous_RoversList.insertSorted(p);
 			}
@@ -899,6 +905,7 @@ void MarsStation::check_To_Get_From_Checkup()
 			{
 				PolarRovers* n_r = dynamic_cast<PolarRovers*>(r);
 				rovers_InCheckup.remove(i);
+				i--;
 				Pair<PolarRovers*, double>p(n_r, r->getSpeed());
 				available_Polar_RoversList.insertSorted(p);
 			}
@@ -1374,7 +1381,7 @@ void MarsStation::SaveOutputFile() {
 		
 		// CHECK ON THIS BEFORE DELIVERING THE PROJECT.
 		if (total != 0)
-			outputfile << "Auto-promoted: " << autoPromotedM / total << endl;
+			outputfile << "Auto-promoted: " << (float)autoPromotedM*100 / total<<"%" << endl;
 
 
 		outputfile << endl << endl;
@@ -1685,7 +1692,8 @@ void MarsStation::getInCheckupRover(Node<int>*& e, Node<int>*& p, Node<int>*& m)
 
 				if (!e)
 				{
-					e = tail_e = temp_e;
+					e =  temp_e;
+					tail_e = e;
 					temp_e = nullptr;
 				}
 				else
@@ -1698,9 +1706,10 @@ void MarsStation::getInCheckupRover(Node<int>*& e, Node<int>*& p, Node<int>*& m)
 			else if (dynamic_cast<MountaneousRovers*>(m_r))
 			{
 				temp_m = new Node<int>(m_r->getID());
-				if (!p)
+				if (!m)
 				{
-					m = tail_m = temp_m;
+					m =  temp_m;
+					tail_m = m;
 					temp_m = nullptr;
 
 				}
@@ -1715,12 +1724,10 @@ void MarsStation::getInCheckupRover(Node<int>*& e, Node<int>*& p, Node<int>*& m)
 			else if (dynamic_cast<PolarRovers*>(m_r))
 			{
 				temp_p = new Node<int>(m_r->getID());
-
-
-
-				if (!m)
+				if (!p)
 				{
-					m = tail_p = temp_p;
+					p =  temp_p;
+					tail_p = p ;
 
 					temp_p = nullptr;
 				}

@@ -27,7 +27,7 @@ public:
 		return CMtillCheckup;
 	}
 	void setCMforCheckup(int a) {
-		CMtillCheckup = a;
+		this->CMtillCheckup = a;
 	}
 
 	// Get No. failed missions, increment it.
