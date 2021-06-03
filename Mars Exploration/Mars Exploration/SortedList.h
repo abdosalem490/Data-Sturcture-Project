@@ -38,7 +38,7 @@ private:
 	
 	Node<ItemType>* getNodeAt(int position) const {
 		Node<ItemType>* curPtr = headPtr;
-		for (int skip = 1; skip < position; skip++)
+		for (int skip = 0; skip < position; skip++)
 			curPtr = curPtr->getNext();
 		return curPtr;
 	}
