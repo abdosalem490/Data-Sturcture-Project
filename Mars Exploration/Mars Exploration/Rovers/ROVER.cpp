@@ -49,7 +49,7 @@ int Rover::getCheckupD() const {
 
 void Rover::incrementCM() {
 	totalCM++;
-	setCMforCheckup(CMtillCheckup++);
+	CMtillCheckup++;
 }
 void Rover::decrementCM() {
 	if (totalCM != 0)
