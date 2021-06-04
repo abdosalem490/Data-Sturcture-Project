@@ -2,24 +2,24 @@ CD	ID	FD	WD	ED
 10	1	1	0	9
 11	3	3	0	8
 11	2	2	0	9
-16	7	9	1	6
-19	4	5	6	8
-49	9	11	29	9
-58	15	23	26	9
+28	8	10	7	11
 28	5	6	5	17
-67	17	25	33	9
-33	11	15	1	17
+31	9	11	7	13
+34	7	9	13	5 *
 39	14	22	6	11
-45	10	13	6	26
-57	8	10	36	11
-67	16	24	33	10
-69	12	17	18	34
+48	11	15	16	17
+53	12	17	18	18
+63	16	24	29	10
+65	15	23	25	17
+65	10	13	26	26
+72	17	25	38	9
+80	4	5	56	8 *
 
 
-Missions: 15[M: 5, P: 2, E: 8]
+Missions: 15[M: 6, P: 2, E: 7]
 Rovers: 3	[M: 1, P: 1, E: 1]
-Avg Wait = 13.3333, Avg Execution = 12.8667
-Auto-promoted: 20%
+Avg Wait = 16.4, Avg Execution = 12.5333
+Auto-promoted = 0.125%
 
 
 * beside any mission indicates that the mission has failed once and got reassigned.

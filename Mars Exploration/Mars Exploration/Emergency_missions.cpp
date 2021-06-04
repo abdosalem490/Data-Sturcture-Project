@@ -4,6 +4,7 @@ Emergency_missions::Emergency_missions(int id, int Formulation_Day, int Signific
 {
 	Calculate_priority();
 	autoPromoted = false;
+	promotedByEvent = false;
 }
 void Emergency_missions::Calculate_priority()
 {
@@ -30,4 +31,10 @@ bool Emergency_missions::getAutoPromoted() {
 }
 void Emergency_missions::setAutoPromoted(bool p) {
 	autoPromoted = p;
+}
+bool Emergency_missions::getPromotedByEvent() const {
+	return promotedByEvent;
+}
+void Emergency_missions::setPromotedByEvent(bool p) {
+	promotedByEvent = p;
 }
