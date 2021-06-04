@@ -604,22 +604,107 @@ void MarsStation::check_For_Completed_Rovers_Missions()
 			{
 				if (dynamic_cast<EmergencyRovers*>(r))
 				{
+
+					int CM = r->getTotalCM();
+					int FM = r->getFM();
+					double speed = r->getSpeed();
+					double distanceTravelled = r->getDistanceTravelled();
+
+					bool conditions[3] = { (CM == 0 && FM != 0), (distanceTravelled / speed >= 75), (double(CM) / FM <= (1.0 / 3.0)) };
+					int yes = 0;
+
+					for (int i = 0; i < 3; i++)
+						if (conditions[i] == true) {
+							if (i == 1)
+								r->setDistanceTravelled(0);
+							else if (i == 2) {
+								r->setFM(0);
+								r->setTotalCM(0);
+							}
+							yes++;
+						}
+					if (conditions[0] == true) {
+						r->setTotalCM(0);
+						r->setFM(0);
+
+					}
+
+
+					int days = int(ceil((float(yes) / 2) * r->getCheckupD()));
 					EmergencyRovers* n_r = dynamic_cast<EmergencyRovers*>(r);
+
+					n_r->setdaysInMaintenance(n_r->getdaysInMaintenance() + days);
 					n_r->setSpeed(n_r->getSpeed() * 2);
 					Pair< EmergencyRovers*, int> p(n_r, n_r->getdaysInMaintenance());
 					emergency_Rovers_InMaintenance.insertSorted(p);
 				}
 				else if (dynamic_cast<MountaneousRovers*>(r))
 				{
+
+
+					int CM = r->getTotalCM();
+					int FM = r->getFM();
+					double speed = r->getSpeed();
+					double distanceTravelled = r->getDistanceTravelled();
+
+					bool conditions[3] = { (CM == 0 && FM != 0), (distanceTravelled / speed >= 75), (double(CM) / FM <= (1.0 / 3.0)) };
+					int yes = 0;
+
+					for (int i = 0; i < 3; i++)
+						if (conditions[i] == true) {
+							if (i == 1)
+								r->setDistanceTravelled(0);
+							else if (i == 2) {
+								r->setFM(0);
+								r->setTotalCM(0);
+							}
+							yes++;
+						}
+					if (conditions[0] == true) {
+						r->setTotalCM(0);
+						r->setFM(0);
+
+					}
+
+					int days = int(ceil((float(yes) / 2) * r->getCheckupD()));
 					MountaneousRovers* n_r = dynamic_cast<MountaneousRovers*>(r);
 					n_r->setSpeed(n_r->getSpeed() * 2);
+					n_r->setdaysInMaintenance(n_r->getdaysInMaintenance() + days);
 					Pair< MountaneousRovers*, int> p(n_r,n_r-> getdaysInMaintenance());
 					mountaneous_Rovers_InMaintenance.insertSorted(p);
 				}
 				else if (dynamic_cast<PolarRovers*>(r))
 				{
+
+
+					int CM = r->getTotalCM();
+					int FM = r->getFM();
+					double speed = r->getSpeed();
+					double distanceTravelled = r->getDistanceTravelled();
+
+					bool conditions[3] = { (CM == 0 && FM != 0), (distanceTravelled / speed >= 75), (double(CM) / FM <= (1.0 / 3.0)) };
+					int yes = 0;
+
+					for (int i = 0; i < 3; i++)
+						if (conditions[i] == true) {
+							if (i == 1)
+								r->setDistanceTravelled(0);
+							else if (i == 2) {
+								r->setFM(0);
+								r->setTotalCM(0);
+							}
+							yes++;
+						}
+					if (conditions[0] == true) {
+						r->setTotalCM(0);
+						r->setFM(0);
+
+					}
+					int days = int(ceil((float(yes) / 2) * r->getCheckupD()));
+
 					PolarRovers* n_r = dynamic_cast<PolarRovers*>(r);
 					n_r->setSpeed(n_r->getSpeed() * 2);
+					n_r->setdaysInMaintenance(n_r->getdaysInMaintenance() + days);
 					Pair< PolarRovers*, int> p(n_r,n_r->getdaysInMaintenance());
 					Polar_Rovers_InMaintenance.insertSorted(p);
 				}
@@ -781,9 +866,11 @@ void MarsStation::check_for_rovers_into_maintenance() {
 				}
 				yes++;
 			}
-		if (conditions[0] == true)
+		if (conditions[0] == true) {
 			toBeMaintained->setTotalCM(0);
+			toBeMaintained->setFM(0);
 
+		}
 		int days = int(ceil((float(yes) / 2) * toBeMaintained->getCheckupD()));
 
 
@@ -819,15 +906,16 @@ void MarsStation::check_for_rovers_into_maintenance() {
 				}
 				yes++;
 			}
-		if (conditions[0] == true)
+		if (conditions[0] == true) {
 			toBeMaintained->setTotalCM(0);
+			toBeMaintained->setFM(0);
 
+		}
 		int days = int(ceil((float(yes) / 2) * toBeMaintained->getCheckupD()));
 
 
 		// Adding it to the maintenance list if any of the following is satisfied:
 		if (yes) {
-
 			toBeMaintained->setDistanceTravelled(0);
 			toBeMaintained->setMaintenanceDuration(days);
 			toBeMaintained->setdaysInMaintenance(days);
@@ -858,9 +946,10 @@ void MarsStation::check_for_rovers_into_maintenance() {
 				}
 				yes++;
 			}
-		if (conditions[0] == true)
+		if (conditions[0] == true) {
 			toBeMaintained->setTotalCM(0);
-
+			toBeMaintained->setFM(0);
+		}
 		int days = int(ceil((float(yes) / 2) * toBeMaintained->getCheckupD()));
 
 
