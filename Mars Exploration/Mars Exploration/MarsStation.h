@@ -42,8 +42,8 @@ public:
     void check_For_Completed_Rovers_Missions();
     void check_For_Failed_Missions();
     void check_To_Get_From_Checkup();
-    void check_for_rovers_into_maintainance();
-    void check_for_rovers_outta_maintainance();
+    void check_for_rovers_into_maintenance();
+    void check_for_rovers_outta_maintenance();
 
     void increment_Days();
     void setToday(int d);
@@ -118,6 +118,14 @@ private:
     //today's day 
     int today = 0;
 
+    // number of initial mountainous, polar, emergency missions: incremented at formulation and decremented at cancellation.
+    int numOfMntM = 0, numOfPolarM = 0, numOfEmergencyM = 0;
+
+    // a rough total number of all the missions (calculated when enqueueing events, helps at calculating chances of faliure).
+    // Does not take cancellation into account.
+    int roughNumOfMissions = 0;
+    int numOfFailedMissions = 0;
+
     //<------------------------------Lists--------------------------------->
 
     //available missions
@@ -130,7 +138,7 @@ private:
     LinkedSortedList<Pair<Rover*, int>> rovers_InMission;
 
     //completed missions
-    LinkedSortedList<Pair<Mission* , int>> completed_MissionsList;
+    LinkedSortedList<Pair<Mission* , double>> completed_MissionsList;
 
     //events needed to be done
     LinkedQueue <Event*> eventsList;

@@ -20,6 +20,7 @@ public:
 	// Get No. completed missions, increment it, 
 	// or decrement it (in case of faliure for instance.)
 	virtual int getTotalCM() const;
+	void setTotalCM(int t);
 	virtual void incrementCM();
 	virtual void decrementCM();
 
@@ -33,6 +34,7 @@ public:
 	// Get No. failed missions, increment it.
 	virtual int getFM() const;
 	virtual void incrementFM();
+	void setFM(int f);
 
 
 	// in the following : replace int pointer with a mission pointer
@@ -52,6 +54,7 @@ public:
 
 	virtual double getDistanceTravelled() const;
 	virtual void incrementDistanceTravelled(double amount);
+	void setDistanceTravelled(double p);
 
 	//getters and setters to check for the comleteness of Maintenance
 	virtual void setFinishedMaintenance(bool value);
@@ -60,6 +63,7 @@ public:
 	//getters and setters for maintenanceDuration
 	virtual void setMaintenanceDuration(int d);
 	virtual int getMaintenanceDuration();
+
 
 	//setters and getters for the ID
 	virtual int getID();

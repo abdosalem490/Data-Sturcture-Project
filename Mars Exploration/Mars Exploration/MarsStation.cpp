@@ -29,9 +29,9 @@ bool MarsStation::Execution()
 
 	check_For_Completed_Rovers_Missions();
 
-	check_for_rovers_into_maintainance();
+	check_for_rovers_into_maintenance();
 
-	//check_for_rovers_outta_maintainance();
+	check_for_rovers_outta_maintenance();
 
     check_To_Get_From_Checkup();
 
@@ -172,17 +172,23 @@ void MarsStation::Assign_mission()
 		{
 			available_Emergency_MissionList.dequeue(pair_emergency);
 			EmergencyRovers* ptr_rover;
+
 			Pair<EmergencyRovers*, int> pair_rover;
 			pair_rover = emergency_Rovers_InMaintenance.getEntry(0);
 			emergency_Rovers_InMaintenance.remove(0);
+			
 			ptr_rover = pair_rover.get_value();
+			
 			// reducing speed to half
 			ptr_rover->setSpeed((ptr_rover->getSpeed() / 2));
+			
 			//define that the rover didn't finish maintenance
 			ptr_rover->setFinishedMaintenance(false);
 			ptr_rover->setdaysInMaintenance(ptr_rover->getMaintenanceDuration());
+			
 			// assigning mission to rover
 			ptr_rover->assignMission(ptr_mission);
+			
 			// assigning Execution_Days
 			int days_Execution = (int)ceil(((2 * ptr_mission->get_Target_Location()) / (25 * ptr_rover->getSpeed())) + ptr_mission->get_Mission_Duration());
 			ptr_mission->set_Execution_Days(days_Execution);
@@ -526,6 +532,8 @@ void MarsStation::Cancel_mission(int id)
 		temp.dequeue(t);
 		available_Mountaneous_MissionList.enqueue(t);
 	}
+	// Decrementing the number of mountainous (in this data member) only happens here, don't add anywhere else.
+	numOfMntM--;
 
 }
 void MarsStation::execute_Events()
@@ -567,16 +575,14 @@ void MarsStation::check_For_Completed_Rovers_Missions()
 			// Inserting mission to the completed missions list.
 			int priority1_CompeletionDays = m->get_Completion_Day();
 			int priority2_ExecutionDays = m->get_Execution_Days();
-			int priority = 0;
-			int numOfDigitsInExecutionDays = 0;
-			int temp = priority2_ExecutionDays;
-			while (temp > 0)
-			{
-				numOfDigitsInExecutionDays++;
-				temp /= 10;
-			}
-			priority = priority1_CompeletionDays * numOfDigitsInExecutionDays + priority2_ExecutionDays;
-			Pair<Mission*, int>p1_new(m, priority);
+			
+			double priority = 0;
+
+			// Priority will be: CD.ED. CD is the integer part, and ED is the fraction part.
+			std::string stringOfPriority = to_string(priority1_CompeletionDays) + "." + to_string(priority2_ExecutionDays);
+			priority = std::stod(stringOfPriority);
+			
+			Pair<Mission*, double>p1_new(m, priority);
 			completed_MissionsList.insertSorted(p1_new);
 
 			// Incrementing the number of completed missions done by this rover.
@@ -662,7 +668,6 @@ void MarsStation::autoPromote()
 			n_m->set_Waiting_Days(m->get_Waiting_Days());
 			n_m->set_failed(m->get_failed());
 			n_m->setAutoPromoted(true);
-			//cout << "test";
 			Add_mission(n_m);
 			n_m = nullptr;
 		}
@@ -694,8 +699,10 @@ void MarsStation::check_For_Failed_Missions()
 		Pair<Mission*, int>p1 = inExecution_MissionsList.getEntry(i);
 		m = p1.get_value();
 
-		// There's a slim 0.5% chance the mission will fail, ONLY IF it has not failed before.
-		if (random < 0.001 && random > 0 && m->get_failed() == false )
+		// There's a slim 2.5% chance the mission will fail, given the following:
+		/// 1. If it has not failed before.
+		/// 2. If the number of failed missions thus far relative to the total numer of missions does not exceed 0.1.
+		if (random < 0.025 && random > 0 && m->get_failed() == false && (float(numOfFailedMissions) / float(roughNumOfMissions) < 0.1))
 		{
 			//std::cout << "Mission " << m->get_ID() << " failed on day " << today << std::endl;
 			Pair<Rover*, int> p1 = rovers_InMission.getEntry(i);
@@ -738,11 +745,13 @@ void MarsStation::check_For_Failed_Missions()
 			r->setCMforCheckup(0);
 			Pair<Rover*, int>pairForCheckup(r, r->getdaysInCheckup());
 			rovers_InCheckup.insertSorted(pairForCheckup);
+			
+			numOfFailedMissions++;
 		}
 		i++;
 	}
 }
-void MarsStation::check_for_rovers_into_maintainance() {
+void MarsStation::check_for_rovers_into_maintenance() {
 
 	// Criteria for moving rovers into maintainance:
 	//  1. If it has none completed missions and any number of failed missions.
@@ -763,10 +772,19 @@ void MarsStation::check_for_rovers_into_maintainance() {
 		int yes = 0;
 
 		for (int i = 0; i < 3; i++)
-			if (conditions[i] == true)
+			if (conditions[i] == true) {
+				if (i == 1)
+					toBeMaintained->setDistanceTravelled(0);
+				else if (i == 2){
+					toBeMaintained->setFM(0);
+					toBeMaintained->setTotalCM(0);
+				}
 				yes++;
+			}
+		if (conditions[0] == true)
+			toBeMaintained->setTotalCM(0);
 
-		int days = (yes / 2) * toBeMaintained->getCheckupD();
+		int days = int(ceil((float(yes) / 2) * toBeMaintained->getCheckupD()));
 
 
 		// Adding it to the maintenance list if any of the following is satisfied:
@@ -792,14 +810,25 @@ void MarsStation::check_for_rovers_into_maintainance() {
 		int yes = 0;
 
 		for (int i = 0; i < 3; i++)
-			if (conditions[i] == true)
+			if (conditions[i] == true) {
+				if (i == 1)
+					toBeMaintained->setDistanceTravelled(0);
+				else if (i == 2) {
+					toBeMaintained->setFM(0);
+					toBeMaintained->setTotalCM(0);
+				}
 				yes++;
+			}
+		if (conditions[0] == true)
+			toBeMaintained->setTotalCM(0);
 
-		int days = (yes / 2) * toBeMaintained->getCheckupD();
+		int days = int(ceil((float(yes) / 2) * toBeMaintained->getCheckupD()));
 
 
 		// Adding it to the maintenance list if any of the following is satisfied:
 		if (yes) {
+
+			toBeMaintained->setDistanceTravelled(0);
 			toBeMaintained->setMaintenanceDuration(days);
 			toBeMaintained->setdaysInMaintenance(days);
 			available_Mountaneous_RoversList.remove(i);
@@ -820,14 +849,26 @@ void MarsStation::check_for_rovers_into_maintainance() {
 		int yes = 0;
 
 		for (int i = 0; i < 3; i++)
-			if (conditions[i] == true)
+			if (conditions[i] == true) {
+				if (i == 1)
+					toBeMaintained->setDistanceTravelled(0);
+				else if (i == 2) {
+					toBeMaintained->setFM(0);
+					toBeMaintained->setTotalCM(0);
+				}
 				yes++;
+			}
+		if (conditions[0] == true)
+			toBeMaintained->setTotalCM(0);
 
-		int days = (yes / 2) * toBeMaintained->getCheckupD();
+		int days = int(ceil((float(yes) / 2) * toBeMaintained->getCheckupD()));
 
 
 		// Adding it to the maintenance list if any of the following is satisfied:
 		if (yes) {
+			
+			toBeMaintained->setDistanceTravelled(0);
+
 			toBeMaintained->setMaintenanceDuration(days);
 			toBeMaintained->setdaysInMaintenance(days);
 
@@ -839,38 +880,37 @@ void MarsStation::check_for_rovers_into_maintainance() {
 	}
 
 }
-void MarsStation::check_for_rovers_outta_maintainance() {
+void MarsStation::check_for_rovers_outta_maintenance() {
 
 	for (int i = 0; i < emergency_Rovers_InMaintenance.getLength(); i++) {
 		Pair<EmergencyRovers*, int>p = emergency_Rovers_InMaintenance.getEntry(i);
 		EmergencyRovers* r = p.get_value();
 		if (r->getdaysInMaintenance() == 0) {
+
 			emergency_Rovers_InMaintenance.remove(i);
-			i--;
 			Pair<EmergencyRovers*, double> p(r, r->getSpeed());
 			available_Emergency_RoversList.insertSorted(p);
+			i--;
 		}
 	}
 	for (int i = 0; i < mountaneous_Rovers_InMaintenance.getLength(); i++) {
-
 		Pair<MountaneousRovers*, int>p = mountaneous_Rovers_InMaintenance.getEntry(i);
-
 		MountaneousRovers* r = p.get_value();
 		if (r->getdaysInMaintenance() == 0) {
-			emergency_Rovers_InMaintenance.remove(i);
-			i--;
+			mountaneous_Rovers_InMaintenance.remove(i);
 			Pair<MountaneousRovers*, double> p(r, r->getSpeed());
 			available_Mountaneous_RoversList.insertSorted(p);
+			i--;
 		}
 	}
 	for (int i = 0; i < Polar_Rovers_InMaintenance.getLength(); i++) {
 		Pair<PolarRovers*, int>p = Polar_Rovers_InMaintenance.getEntry(i);
 		PolarRovers* r = p.get_value();
 		if (r->getdaysInMaintenance() == 0) {
-			emergency_Rovers_InMaintenance.remove(i);
-			i--;
+			Polar_Rovers_InMaintenance.remove(i);
 			Pair<PolarRovers*, double> p(r, r->getSpeed());
 			available_Polar_RoversList.insertSorted(p);
+			i--;
 		}
 	}
 }
@@ -1038,7 +1078,7 @@ void MarsStation::Promote_mission(int id)
 			Emergency_missions* n_t = new Emergency_missions(t->get_ID(), t->get_Formulation_Day(), t->get_Significance(), t->get_Mission_Duration(), t->get_Target_Location());
 			n_t->set_Waiting_Days(t->get_Waiting_Days());
 			n_t->set_failed(t->get_failed());
-			n_t->setAutoPromoted(true);
+			n_t->setPromotedByEvent(true);
 			
 			Add_mission(n_t);
 		}
@@ -1064,14 +1104,17 @@ void MarsStation::Add_mission(Mission* ptr)
 		int pr = EM->get_priority();
 		Pair<Emergency_missions*, int> p(EM, pr);
 		available_Emergency_MissionList.enqueue(p);
+		numOfEmergencyM++;
 	}
 	else if (MO != NULL)
 	{
 		available_Mountaneous_MissionList.enqueue(MO);
+		numOfMntM++;
 	}
 	else if (PO != NULL)
 	{
 		available_Polar_MissionList.enqueue(PO);
+		numOfPolarM++;
 	}
 }
 void MarsStation::LoadInputFile() {
@@ -1302,6 +1345,7 @@ void MarsStation::LoadInputFile() {
 
 				eventsList.enqueue(toAppend);
 
+				roughNumOfMissions++;
 			}
 		}
 	}
@@ -1322,7 +1366,9 @@ void MarsStation::SaveOutputFile() {
 
 		outputfile << "CD\tID\tFD\tWD\tED" << endl;
 		
-		int numOfPolarM = 0, numOfEmergencyM = 0, numOfMntM = 0, total = 0, autoPromotedM = 0;
+		// The variables numOfFinalMntM, numOfFinalEmM,, are needed instead of their equivalent data member to know the final number
+		// After eventPromotion/autoPromotion of mountainous missions, and after cancellation of any mission.
+		int numOfFinalMntM = 0, numOfFinalEmM = 0, total = 0, autoPromotedM = 0;
 		double waitingDays = 0, executionDays = 0, avgWaiting = 0, avgExecution = 0;
 		
 		
@@ -1337,28 +1383,27 @@ void MarsStation::SaveOutputFile() {
 			waitingDays += completed->get_Waiting_Days();
 			executionDays += completed->get_Execution_Days();
 
-			if (dynamic_cast<Polar_missions*> (completed))
-				numOfPolarM++;
+			if (dynamic_cast<Mountainous_missions*> (completed))
+				numOfFinalMntM++;
+
 			else if (dynamic_cast<Emergency_missions*> (completed)) {
-				numOfEmergencyM++;
+				numOfFinalEmM++;
 
 				// For calculation of the percentage of automatically promoted missions later.
 				if (dynamic_cast<Emergency_missions*> (completed)->getAutoPromoted() == true)
 					autoPromotedM++;
 			}
-			else
-				numOfMntM++;
 
 			outputfile << endl;
 		}
 
 
-		total = numOfPolarM + numOfEmergencyM + numOfMntM;
+		total = numOfPolarM + numOfFinalEmM + numOfFinalMntM;
 		avgExecution = executionDays / total;
 		avgWaiting = waitingDays / total;
 
 		outputfile << endl << endl;
-		outputfile << "Missions: " << total << "[M: " << numOfMntM << ", P: " << numOfPolarM << ", E: " << numOfEmergencyM << "]" << endl;
+		outputfile << "Missions: " << total << "[M: " << numOfFinalMntM << ", P: " << numOfPolarM << ", E: " << numOfFinalEmM << "]" << endl;
 
 		int numOfPolarR = available_Polar_RoversList.getLength() + Polar_Rovers_InMaintenance.getLength();
 		int numOfMntR = available_Mountaneous_RoversList.getLength() + mountaneous_Rovers_InMaintenance.getLength();
@@ -1379,9 +1424,10 @@ void MarsStation::SaveOutputFile() {
 		outputfile << "Rovers: " << totalR << "\t[M: " << numOfMntR << ", P: " << numOfPolarR << ", E: " << numofEmergencyR << "]" << endl;
 		outputfile << "Avg Wait = " << avgWaiting << ", Avg Execution = " << avgExecution << endl;
 		
-		// CHECK ON THIS BEFORE DELIVERING THE PROJECT.
 		if (total != 0)
-			outputfile << "Auto-promoted: " << (float)autoPromotedM*100 / total<<"%" << endl;
+			// This is the number of autoPromoted missions relative to the total number of mountainous missions (Initially, only excluded those cancelled of course).
+			/// Thus this numOfMntM is ONLY decremented when cancelling a mountainous missions, not when promoting.
+			outputfile << "Auto-promoted = " << float(autoPromotedM) / float(numOfMntM) << "%" << endl;
 
 
 		outputfile << endl << endl;

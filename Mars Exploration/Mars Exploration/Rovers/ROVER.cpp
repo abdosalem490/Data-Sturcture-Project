@@ -58,6 +58,9 @@ void Rover::decrementCM() {
 int Rover::getTotalCM() const {
 	return totalCM;
 }
+void Rover::setTotalCM(int t) {
+	totalCM = t;
+}
 
 void Rover::incrementFM() {
 	failedMissions++;
@@ -65,11 +68,17 @@ void Rover::incrementFM() {
 int Rover::getFM() const {
 	return failedMissions;
 }
-
+void Rover::setFM(int f) {
+	failedMissions = f;
+}
 
 double Rover::getDistanceTravelled() const {
 	return distanceTravelled;
 }
+void Rover::setDistanceTravelled(double p) {
+	distanceTravelled = p;
+}
+
 void Rover::incrementDistanceTravelled(double amount) {
 	distanceTravelled += amount;
 }
