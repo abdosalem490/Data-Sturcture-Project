@@ -62,7 +62,7 @@ void MarsStation::Assign_mission()
 		return;
 	}
 		 
-		
+	
 	while (available_Emergency_MissionList.isEmpty() == false)
 	{
 		Emergency_missions* ptr_mission = NULL;
@@ -84,7 +84,8 @@ void MarsStation::Assign_mission()
 			// assigning mission to rover
 			ptr_rover->assignMission(ptr_mission);
 			// assigning Execution_Days
-			int days_Execution = (int)ceil(((2 * ptr_mission->get_Target_Location()) / (25 * ptr_rover->getSpeed())) + ptr_mission->get_Mission_Duration());
+
+			int days_Execution = (int)ceil((2 * ptr_mission->get_Target_Location()) / (25 * ptr_rover->getSpeed())) + ptr_mission->get_Mission_Duration();
 			ptr_mission->set_Execution_Days(days_Execution);
 			
 			
@@ -105,68 +106,146 @@ void MarsStation::Assign_mission()
 			Pair<Rover*, int> Pair_rover_inMission(ptr_rover, ptr_mission->get_Completion_Day());
 			rovers_InMission.insertSorted(Pair_rover_inMission);
 		}
-		else if (available_Mountaneous_RoversList.isEmpty() == false && ptr_mission->get_failed() == false)
+		else if (available_Mountaneous_RoversList.isEmpty() == false)
 		{
-			available_Emergency_MissionList.dequeue(pair_emergency);
-			MountaneousRovers* ptr_rover;
-			Pair<MountaneousRovers*, double> pair_rover;
-			pair_rover = available_Mountaneous_RoversList.getEntry(0);
-			available_Mountaneous_RoversList.remove(0);
-			ptr_rover = pair_rover.get_value();
-			// assigning mission to rover
-			ptr_rover->assignMission(ptr_mission);
-			// assigning Execution_Days
-			int days_Execution = (int)ceil(((2 * ptr_mission->get_Target_Location()) / (25 * ptr_rover->getSpeed())) + ptr_mission->get_Mission_Duration());
-			ptr_mission->set_Execution_Days(days_Execution);
-			
-			// assigning completion days
-			int days_completion = 0;
-			if (ptr_mission->get_failed() == false)
-				days_completion = ptr_mission->get_Execution_Days() + ptr_mission->get_Waiting_Days() + ptr_mission->get_Formulation_Day();
-			else
-				days_completion = ptr_mission->get_Execution_Days() + ptr_mission->get_Waiting_Days() + ptr_mission->get_failed_day();
+			// to get only one mission that didn't fail
+			bool flag = true;
+			// if the mission failed then we will look the mission that is behind it and didn't fail before
+			if (ptr_mission->get_failed())
+			{
+				Emergency_missions* temp_ptr_mission = NULL;
+				Pair<Emergency_missions*, int> temp_pair_emergency;
+				LinkedpriorityQueue<Emergency_missions*, int> temp_available_Emergency_MissionList;
+				while (!available_Emergency_MissionList.isEmpty())
+				{
+					available_Emergency_MissionList.dequeue(temp_pair_emergency);
+					temp_ptr_mission = temp_pair_emergency.get_value();
+					if (!temp_ptr_mission->get_failed() && flag)
+					{
+						ptr_mission = temp_ptr_mission;
+						flag = false;
+					}
+					else
+					{
+						temp_available_Emergency_MissionList.enqueue(temp_pair_emergency);
+					}
+				}
+				while (!temp_available_Emergency_MissionList.isEmpty())
+				{
+					temp_available_Emergency_MissionList.dequeue(temp_pair_emergency);
 
-			ptr_mission->set_Completion_Day(days_completion);
+					available_Emergency_MissionList.enqueue(temp_pair_emergency);
+				}
+			}
+			else
+			{
+				available_Emergency_MissionList.dequeue(pair_emergency);
+				flag = false;
+			}
+			if (!flag)
+			{
+				MountaneousRovers* ptr_rover;
+				Pair<MountaneousRovers*, double> pair_rover;
+				pair_rover = available_Mountaneous_RoversList.getEntry(0);
+				available_Mountaneous_RoversList.remove(0);
+				ptr_rover = pair_rover.get_value();
+				// assigning mission to rover
+				ptr_rover->assignMission(ptr_mission);
+				// assigning Execution_Days
+				int days_Execution = (int)ceil(((2 * ptr_mission->get_Target_Location()) / (25 * ptr_rover->getSpeed())) + ptr_mission->get_Mission_Duration());
+				ptr_mission->set_Execution_Days(days_Execution);
+
+				// assigning completion days
+				int days_completion = 0;
+				if (ptr_mission->get_failed() == false)
+					days_completion = ptr_mission->get_Execution_Days() + ptr_mission->get_Waiting_Days() + ptr_mission->get_Formulation_Day();
+				else
+					days_completion = ptr_mission->get_Execution_Days() + ptr_mission->get_Waiting_Days() + ptr_mission->get_failed_day();
+
+				ptr_mission->set_Completion_Day(days_completion);
+
+
+				//putting mission in exceution
+				Pair<Mission*, int> Pair_mission_exceution(ptr_mission, ptr_mission->get_Completion_Day());
+				inExecution_MissionsList.insertSorted(Pair_mission_exceution);
+				// putting rover in execution
+				Pair<Rover*, int> Pair_rover_inMission(ptr_rover, ptr_mission->get_Completion_Day());
+				rovers_InMission.insertSorted(Pair_rover_inMission);
+
+			}
+			else
+				break;
 			
-			
-			//putting mission in exceution
-			Pair<Mission*, int> Pair_mission_exceution(ptr_mission, ptr_mission->get_Completion_Day());
-			inExecution_MissionsList.insertSorted(Pair_mission_exceution);
-			// putting rover in execution
-			Pair<Rover*, int> Pair_rover_inMission(ptr_rover, ptr_mission->get_Completion_Day());
-			rovers_InMission.insertSorted(Pair_rover_inMission);
 		}
-		else if (available_Polar_RoversList.isEmpty() == false && ptr_mission->get_failed() == false)
+		else if (available_Polar_RoversList.isEmpty() == false)
 		{
-			available_Emergency_MissionList.dequeue(pair_emergency);
-			PolarRovers* ptr_rover;
-			Pair<PolarRovers*, double> pair_rover;
-			pair_rover = available_Polar_RoversList.getEntry(0);
-			available_Polar_RoversList.remove(0);
-			ptr_rover = pair_rover.get_value();
-			// assigning mission to rover
-			ptr_rover->assignMission(ptr_mission);
-			// assigning Execution_Days
-			int days_Execution = (int)ceil(((2 * ptr_mission->get_Target_Location()) / (25 * ptr_rover->getSpeed())) + ptr_mission->get_Mission_Duration());
-			ptr_mission->set_Execution_Days(days_Execution);
-			
-			
-			// assigning completion days
-			int days_completion = 0;
-			if (ptr_mission->get_failed() == false)
-				days_completion = ptr_mission->get_Execution_Days() + ptr_mission->get_Waiting_Days() + ptr_mission->get_Formulation_Day();
-			else
-				days_completion = ptr_mission->get_Execution_Days() + ptr_mission->get_Waiting_Days() + ptr_mission->get_failed_day();
+			// to get only one mission that didn't fail
+			bool flag = true;
+			// if the mission failed then we will look the mission that is behind it and didn't fail before
+			if (ptr_mission->get_failed())
+			{
+				Emergency_missions* temp_ptr_mission = NULL;
+				Pair<Emergency_missions*, int> temp_pair_emergency;
+				LinkedpriorityQueue<Emergency_missions*, int> temp_available_Emergency_MissionList;
+				while (!available_Emergency_MissionList.isEmpty())
+				{
+					available_Emergency_MissionList.dequeue(temp_pair_emergency);
+					temp_ptr_mission = temp_pair_emergency.get_value();
+					if (!temp_ptr_mission->get_failed() && flag)
+					{
+						ptr_mission = temp_ptr_mission;
+						flag = false;
+					}
+					else
+					{
+						temp_available_Emergency_MissionList.enqueue(temp_pair_emergency);
+					}
+				}
+				while (!temp_available_Emergency_MissionList.isEmpty())
+				{
+					temp_available_Emergency_MissionList.dequeue(temp_pair_emergency);
 
-			ptr_mission->set_Completion_Day(days_completion);
-			
-			
-			//putting mission in exceution
-			Pair<Mission*, int> Pair_mission_exceution(ptr_mission, ptr_mission->get_Completion_Day());
-			inExecution_MissionsList.insertSorted(Pair_mission_exceution);
-			// putting rover in execution
-			Pair<Rover*, int> Pair_rover_inMission(ptr_rover, ptr_mission->get_Completion_Day());
-			rovers_InMission.insertSorted(Pair_rover_inMission);
+					available_Emergency_MissionList.enqueue(temp_pair_emergency);
+				}
+			}
+			else
+			{
+				available_Emergency_MissionList.dequeue(pair_emergency);
+				flag = false;
+			}
+			if (!flag)
+			{
+				PolarRovers* ptr_rover;
+				Pair<PolarRovers*, double> pair_rover;
+				pair_rover = available_Polar_RoversList.getEntry(0);
+				available_Polar_RoversList.remove(0);
+				ptr_rover = pair_rover.get_value();
+				// assigning mission to rover
+				ptr_rover->assignMission(ptr_mission);
+				// assigning Execution_Days
+				int days_Execution = (int)ceil(((2 * ptr_mission->get_Target_Location()) / (25 * ptr_rover->getSpeed())) + ptr_mission->get_Mission_Duration());
+				ptr_mission->set_Execution_Days(days_Execution);
+
+
+				// assigning completion days
+				int days_completion = 0;
+				if (ptr_mission->get_failed() == false)
+					days_completion = ptr_mission->get_Execution_Days() + ptr_mission->get_Waiting_Days() + ptr_mission->get_Formulation_Day();
+				else
+					days_completion = ptr_mission->get_Execution_Days() + ptr_mission->get_Waiting_Days() + ptr_mission->get_failed_day();
+
+				ptr_mission->set_Completion_Day(days_completion);
+
+
+				//putting mission in exceution
+				Pair<Mission*, int> Pair_mission_exceution(ptr_mission, ptr_mission->get_Completion_Day());
+				inExecution_MissionsList.insertSorted(Pair_mission_exceution);
+				// putting rover in execution
+				Pair<Rover*, int> Pair_rover_inMission(ptr_rover, ptr_mission->get_Completion_Day());
+				rovers_InMission.insertSorted(Pair_rover_inMission);
+			}
+			else
+				break;
 		}
 		else if (emergency_Rovers_InMaintenance.isEmpty() == false)
 		{
@@ -211,77 +290,153 @@ void MarsStation::Assign_mission()
 			Pair<Rover*, int> Pair_rover_inMission(ptr_rover, ptr_mission->get_Completion_Day());
 			rovers_InMission.insertSorted(Pair_rover_inMission);
 		}
-		else if (mountaneous_Rovers_InMaintenance.isEmpty() == false && ptr_mission->get_failed() == false)
-		{
-			available_Emergency_MissionList.dequeue(pair_emergency);
-			MountaneousRovers* ptr_rover;
-			Pair<MountaneousRovers*, int> pair_rover;
-			pair_rover = mountaneous_Rovers_InMaintenance.getEntry(0);
-			mountaneous_Rovers_InMaintenance.remove(0);
-			ptr_rover = pair_rover.get_value();
-			// reducing speed to half
-			ptr_rover->setSpeed((ptr_rover->getSpeed() / 2));
-			//define that the rover didn't finish maintenance
-			ptr_rover->setFinishedMaintenance(false);
-			ptr_rover->setdaysInMaintenance(ptr_rover->getMaintenanceDuration());
-			// assigning mission to rover
-			ptr_rover->assignMission(ptr_mission);
-			// assigning Execution_Days
-			int days_Execution = (int)ceil(((2 * ptr_mission->get_Target_Location()) / (25 * ptr_rover->getSpeed())) + ptr_mission->get_Mission_Duration());
-			ptr_mission->set_Execution_Days(days_Execution);
-			
-			
-			// assigning completion days
-			int days_completion = 0;
-			if (ptr_mission->get_failed() == false)
-				days_completion = ptr_mission->get_Execution_Days() + ptr_mission->get_Waiting_Days() + ptr_mission->get_Formulation_Day();
-			else
-				days_completion = ptr_mission->get_Execution_Days() + ptr_mission->get_Waiting_Days() + ptr_mission->get_failed_day();
+		else if (mountaneous_Rovers_InMaintenance.isEmpty() == false)
+		{	
+			// to get only one mission that didn't fail
+			bool flag = true;
+			// if the mission failed then we will look the mission that is behind it and didn't fail before
+			if (ptr_mission->get_failed())
+			{
+				Emergency_missions* temp_ptr_mission = NULL;
+				Pair<Emergency_missions*, int> temp_pair_emergency;
+				LinkedpriorityQueue<Emergency_missions*, int> temp_available_Emergency_MissionList;
+				while (!available_Emergency_MissionList.isEmpty())
+				{
+					available_Emergency_MissionList.dequeue(temp_pair_emergency);
+					temp_ptr_mission = temp_pair_emergency.get_value();
+					if (!temp_ptr_mission->get_failed() && flag)
+					{
+						ptr_mission = temp_ptr_mission;
+						flag = false;
+					}
+					else
+					{
+						temp_available_Emergency_MissionList.enqueue(temp_pair_emergency);
+					}
+				}
+				while (!temp_available_Emergency_MissionList.isEmpty())
+				{
+					temp_available_Emergency_MissionList.dequeue(temp_pair_emergency);
 
-			ptr_mission->set_Completion_Day(days_completion);
-			
-			
-			//putting mission in exceution
-			Pair<Mission*, int> Pair_mission_exceution(ptr_mission, ptr_mission->get_Completion_Day());
-			inExecution_MissionsList.insertSorted(Pair_mission_exceution);
-			// putting rover in execution
-			Pair<Rover*, int> Pair_rover_inMission(ptr_rover, ptr_mission->get_Completion_Day());
-			rovers_InMission.insertSorted(Pair_rover_inMission);
+					available_Emergency_MissionList.enqueue(temp_pair_emergency);
+				}
+			}
+			else
+			{
+				available_Emergency_MissionList.dequeue(pair_emergency);
+				flag = false;
+			}
+			if (!flag)
+			{
+				MountaneousRovers* ptr_rover;
+				Pair<MountaneousRovers*, int> pair_rover;
+				pair_rover = mountaneous_Rovers_InMaintenance.getEntry(0);
+				mountaneous_Rovers_InMaintenance.remove(0);
+				ptr_rover = pair_rover.get_value();
+				// reducing speed to half
+				ptr_rover->setSpeed((ptr_rover->getSpeed() / 2));
+				//define that the rover didn't finish maintenance
+				ptr_rover->setFinishedMaintenance(false);
+				ptr_rover->setdaysInMaintenance(ptr_rover->getMaintenanceDuration());
+				// assigning mission to rover
+				ptr_rover->assignMission(ptr_mission);
+				// assigning Execution_Days
+				int days_Execution = (int)ceil(((2 * ptr_mission->get_Target_Location()) / (25 * ptr_rover->getSpeed())) + ptr_mission->get_Mission_Duration());
+				ptr_mission->set_Execution_Days(days_Execution);
+
+
+				// assigning completion days
+				int days_completion = 0;
+				if (ptr_mission->get_failed() == false)
+					days_completion = ptr_mission->get_Execution_Days() + ptr_mission->get_Waiting_Days() + ptr_mission->get_Formulation_Day();
+				else
+					days_completion = ptr_mission->get_Execution_Days() + ptr_mission->get_Waiting_Days() + ptr_mission->get_failed_day();
+
+				ptr_mission->set_Completion_Day(days_completion);
+
+
+				//putting mission in exceution
+				Pair<Mission*, int> Pair_mission_exceution(ptr_mission, ptr_mission->get_Completion_Day());
+				inExecution_MissionsList.insertSorted(Pair_mission_exceution);
+				// putting rover in execution
+				Pair<Rover*, int> Pair_rover_inMission(ptr_rover, ptr_mission->get_Completion_Day());
+				rovers_InMission.insertSorted(Pair_rover_inMission);
+			}
+			else
+				break;
 		}
-		else if (Polar_Rovers_InMaintenance.isEmpty() == false && ptr_mission->get_failed() == false)
+		else if (Polar_Rovers_InMaintenance.isEmpty() == false)
 		{
-			available_Emergency_MissionList.dequeue(pair_emergency);
-			PolarRovers* ptr_rover;
-			Pair<PolarRovers*, int> pair_rover;
-			pair_rover = Polar_Rovers_InMaintenance.getEntry(0);
-			Polar_Rovers_InMaintenance.remove(0);
-			ptr_rover = pair_rover.get_value();
-			// reducing speed to half
-			ptr_rover->setSpeed((ptr_rover->getSpeed() / 2));
-			//define that the rover didn't finish maintenance
-			ptr_rover->setFinishedMaintenance(false);
-			ptr_rover->setdaysInMaintenance(ptr_rover->getMaintenanceDuration());
-			// assigning mission to rover
-			ptr_rover->assignMission(ptr_mission);
-			// assigning Execution_Days
-			int days_Execution = (int)ceil(((2 * ptr_mission->get_Target_Location()) / (25 * ptr_rover->getSpeed())) + ptr_mission->get_Mission_Duration());
-			ptr_mission->set_Execution_Days(days_Execution);
-			
-			// assigning completion days
-			int days_completion = 0;
-			if (ptr_mission->get_failed() == false)
-				days_completion = ptr_mission->get_Execution_Days() + ptr_mission->get_Waiting_Days() + ptr_mission->get_Formulation_Day();
+			// to get only one mission that didn't fail
+			bool flag = true;
+			// if the mission failed then we will look the mission that is behind it and didn't fail before
+			if (ptr_mission->get_failed())
+			{
+				Emergency_missions* temp_ptr_mission = NULL;
+				Pair<Emergency_missions*, int> temp_pair_emergency;
+				LinkedpriorityQueue<Emergency_missions*, int> temp_available_Emergency_MissionList;
+				while (!available_Emergency_MissionList.isEmpty())
+				{
+					available_Emergency_MissionList.dequeue(temp_pair_emergency);
+					temp_ptr_mission = temp_pair_emergency.get_value();
+					if (!temp_ptr_mission->get_failed() && flag)
+					{
+						ptr_mission = temp_ptr_mission;
+						flag = false;
+					}
+					else
+					{
+						temp_available_Emergency_MissionList.enqueue(temp_pair_emergency);
+					}
+				}
+				while (!temp_available_Emergency_MissionList.isEmpty())
+				{
+					temp_available_Emergency_MissionList.dequeue(temp_pair_emergency);
+		
+					available_Emergency_MissionList.enqueue(temp_pair_emergency);
+				}
+			}
 			else
-				days_completion = ptr_mission->get_Execution_Days() + ptr_mission->get_Waiting_Days() + ptr_mission->get_failed_day();
+			{
+				available_Emergency_MissionList.dequeue(pair_emergency);
+				flag = false;
+			}
+			if (!flag)
+			{
+				PolarRovers* ptr_rover;
+				Pair<PolarRovers*, int> pair_rover;
+				pair_rover = Polar_Rovers_InMaintenance.getEntry(0);
+				Polar_Rovers_InMaintenance.remove(0);
+				ptr_rover = pair_rover.get_value();
+				// reducing speed to half
+				ptr_rover->setSpeed((ptr_rover->getSpeed() / 2));
+				//define that the rover didn't finish maintenance
+				ptr_rover->setFinishedMaintenance(false);
+				ptr_rover->setdaysInMaintenance(ptr_rover->getMaintenanceDuration());
+				// assigning mission to rover
+				ptr_rover->assignMission(ptr_mission);
+				// assigning Execution_Days
+				int days_Execution = (int)ceil(((2 * ptr_mission->get_Target_Location()) / (25 * ptr_rover->getSpeed())) + ptr_mission->get_Mission_Duration());
+				ptr_mission->set_Execution_Days(days_Execution);
 
-			ptr_mission->set_Completion_Day(days_completion);
-			
-			//putting mission in exceution
-			Pair<Mission*, int> Pair_mission_exceution(ptr_mission, ptr_mission->get_Completion_Day());
-			inExecution_MissionsList.insertSorted(Pair_mission_exceution);
-			// putting rover in execution
-			Pair<Rover*, int> Pair_rover_inMission(ptr_rover, ptr_mission->get_Completion_Day());
-			rovers_InMission.insertSorted(Pair_rover_inMission);
+				// assigning completion days
+				int days_completion = 0;
+				if (ptr_mission->get_failed() == false)
+					days_completion = ptr_mission->get_Execution_Days() + ptr_mission->get_Waiting_Days() + ptr_mission->get_Formulation_Day();
+				else
+					days_completion = ptr_mission->get_Execution_Days() + ptr_mission->get_Waiting_Days() + ptr_mission->get_failed_day();
+
+				ptr_mission->set_Completion_Day(days_completion);
+
+				//putting mission in exceution
+				Pair<Mission*, int> Pair_mission_exceution(ptr_mission, ptr_mission->get_Completion_Day());
+				inExecution_MissionsList.insertSorted(Pair_mission_exceution);
+				// putting rover in execution
+				Pair<Rover*, int> Pair_rover_inMission(ptr_rover, ptr_mission->get_Completion_Day());
+				rovers_InMission.insertSorted(Pair_rover_inMission);
+			}
+			else
+				break;
 		}
 		else
 			break;
@@ -296,6 +451,7 @@ void MarsStation::Assign_mission()
 		}
 		if (available_Mountaneous_RoversList.isEmpty() == false)
 		{
+
 			available_Mountaneous_MissionList.dequeue(ptr_mission);
 			MountaneousRovers* ptr_rover;
 			Pair<MountaneousRovers*, double> pair_rover;
@@ -326,36 +482,73 @@ void MarsStation::Assign_mission()
 			Pair<Rover*, int> Pair_rover_inMission(ptr_rover, ptr_mission->get_Completion_Day());
 			rovers_InMission.insertSorted(Pair_rover_inMission);
 		}
-		else if (available_Emergency_RoversList.isEmpty() == false && ptr_mission->get_failed() == false)
+		else if (available_Emergency_RoversList.isEmpty() == false)
 		{
-			available_Mountaneous_MissionList.dequeue(ptr_mission);
-			EmergencyRovers* ptr_rover;
-			Pair<EmergencyRovers*, double> pair_rover;
-			pair_rover = available_Emergency_RoversList.getEntry(0);
-			available_Emergency_RoversList.remove(0);
-			ptr_rover = pair_rover.get_value();
-			// assigning mission to rover
-			ptr_rover->assignMission(ptr_mission);
-			// assigning Execution_Days
-			int days_Execution = (int)ceil(((2 * ptr_mission->get_Target_Location()) / (25 * ptr_rover->getSpeed())) + ptr_mission->get_Mission_Duration());
-			ptr_mission->set_Execution_Days(days_Execution);
-			
-			// assigning completion days
-			int days_completion = 0;
-			if (ptr_mission->get_failed() == false)
-				days_completion = ptr_mission->get_Execution_Days() + ptr_mission->get_Waiting_Days() + ptr_mission->get_Formulation_Day();
-			else
-				days_completion = ptr_mission->get_Execution_Days() + ptr_mission->get_Waiting_Days() + ptr_mission->get_failed_day();
+			// to get only one mission that didn't fail
+			bool flag = true;
+			// if the mission failed then we will look the mission that is behind it and didn't fail before
+			if (ptr_mission->get_failed())
+			{
+				
+				Mountainous_missions* temp_ptr_mission = nullptr;
+				LinkedQueue <Mountainous_missions*> temp_available_mountaneous_missionlist;
+				while (!available_Mountaneous_MissionList.isEmpty())
+				{
+					available_Mountaneous_MissionList.dequeue(temp_ptr_mission);
+					if (!temp_ptr_mission->get_failed() && flag)
+					{
+						ptr_mission = temp_ptr_mission;
+						flag = false;
+					}
+					else
+					{
+						temp_available_mountaneous_missionlist.enqueue(temp_ptr_mission);
+					}
+				}
+				while (!temp_available_mountaneous_missionlist.isEmpty())
+				{
+					temp_available_mountaneous_missionlist.dequeue(temp_ptr_mission);
 
-			ptr_mission->set_Completion_Day(days_completion);
-			
-			
-			//putting mission in exceution
-			Pair<Mission*, int> Pair_mission_exceution(ptr_mission, ptr_mission->get_Completion_Day());
-			inExecution_MissionsList.insertSorted(Pair_mission_exceution);
-			// putting rover in execution
-			Pair<Rover*, int> Pair_rover_inMission(ptr_rover, ptr_mission->get_Completion_Day());
-			rovers_InMission.insertSorted(Pair_rover_inMission);
+					available_Mountaneous_MissionList.enqueue(temp_ptr_mission);
+				}
+			}
+			else
+			{
+				available_Mountaneous_MissionList.dequeue(ptr_mission);
+				flag = false;
+			}
+			if (!flag)
+			{
+				EmergencyRovers* ptr_rover;
+				Pair<EmergencyRovers*, double> pair_rover;
+				pair_rover = available_Emergency_RoversList.getEntry(0);
+				available_Emergency_RoversList.remove(0);
+				ptr_rover = pair_rover.get_value();
+				// assigning mission to rover
+				ptr_rover->assignMission(ptr_mission);
+				// assigning Execution_Days
+				int days_Execution = (int)ceil(((2 * ptr_mission->get_Target_Location()) / (25 * ptr_rover->getSpeed())) + ptr_mission->get_Mission_Duration());
+				ptr_mission->set_Execution_Days(days_Execution);
+
+				// assigning completion days
+				int days_completion = 0;
+				if (ptr_mission->get_failed() == false)
+					days_completion = ptr_mission->get_Execution_Days() + ptr_mission->get_Waiting_Days() + ptr_mission->get_Formulation_Day();
+				else
+					days_completion = ptr_mission->get_Execution_Days() + ptr_mission->get_Waiting_Days() + ptr_mission->get_failed_day();
+
+				ptr_mission->set_Completion_Day(days_completion);
+
+
+				//putting mission in exceution
+				Pair<Mission*, int> Pair_mission_exceution(ptr_mission, ptr_mission->get_Completion_Day());
+				inExecution_MissionsList.insertSorted(Pair_mission_exceution);
+				// putting rover in execution
+				Pair<Rover*, int> Pair_rover_inMission(ptr_rover, ptr_mission->get_Completion_Day());
+				rovers_InMission.insertSorted(Pair_rover_inMission);
+			}
+			else
+				break;
 		}
 		else if (mountaneous_Rovers_InMaintenance.isEmpty() == false)
 		{
@@ -393,41 +586,78 @@ void MarsStation::Assign_mission()
 			Pair<Rover*, int> Pair_rover_inMission(ptr_rover, ptr_mission->get_Completion_Day());
 			rovers_InMission.insertSorted(Pair_rover_inMission);
 		}
-		else if (emergency_Rovers_InMaintenance.isEmpty() == false && ptr_mission->get_failed() == false)
+		else if (emergency_Rovers_InMaintenance.isEmpty() == false)
 		{
-			available_Mountaneous_MissionList.dequeue(ptr_mission);
-			EmergencyRovers* ptr_rover;
-			Pair<EmergencyRovers*, int> pair_rover;
-			pair_rover = emergency_Rovers_InMaintenance.getEntry(0);
-			emergency_Rovers_InMaintenance.remove(0);
-			ptr_rover = pair_rover.get_value();
-			// reducing speed to half
-			ptr_rover->setSpeed((ptr_rover->getSpeed() / 2));
-			//define that the rover didn't finish maintenance
-			ptr_rover->setFinishedMaintenance(false);
-			ptr_rover->setdaysInMaintenance(ptr_rover->getMaintenanceDuration());
-			// assigning mission to rover
-			ptr_rover->assignMission(ptr_mission);
-			// assigning Execution_Days
-			int days_Execution = (int)ceil(((2 * ptr_mission->get_Target_Location()) / (25 * ptr_rover->getSpeed())) + ptr_mission->get_Mission_Duration());
-			ptr_mission->set_Execution_Days(days_Execution);
-			
-			// assigning completion days
-			int days_completion = 0;
-			if (ptr_mission->get_failed() == false)
-				days_completion = ptr_mission->get_Execution_Days() + ptr_mission->get_Waiting_Days() + ptr_mission->get_Formulation_Day();
-			else
-				days_completion = ptr_mission->get_Execution_Days() + ptr_mission->get_Waiting_Days() + ptr_mission->get_failed_day();
+			// to get only one mission that didn't fail
+			bool flag = true;
+			// if the mission failed then we will look the mission that is behind it and didn't fail before
+			if (ptr_mission->get_failed())
+			{
+				
+				Mountainous_missions* temp_ptr_mission = nullptr;
+				LinkedQueue <Mountainous_missions*> temp_available_mountaneous_missionlist;
+				while (!available_Mountaneous_MissionList.isEmpty())
+				{
+					available_Mountaneous_MissionList.dequeue(temp_ptr_mission);
+					if (!temp_ptr_mission->get_failed() && flag)
+					{
+						ptr_mission = temp_ptr_mission;
+						flag = false;
+					}
+					else
+					{
+						temp_available_mountaneous_missionlist.enqueue(temp_ptr_mission);
+					}
+				}
+				while (!temp_available_mountaneous_missionlist.isEmpty())
+				{
+					temp_available_mountaneous_missionlist.dequeue(temp_ptr_mission);
 
-			ptr_mission->set_Completion_Day(days_completion);
-			
-			
-			//putting mission in exceution
-			Pair<Mission*, int> Pair_mission_exceution(ptr_mission, ptr_mission->get_Completion_Day());
-			inExecution_MissionsList.insertSorted(Pair_mission_exceution);
-			// putting rover in execution
-			Pair<Rover*, int> Pair_rover_inMission(ptr_rover, ptr_mission->get_Completion_Day());
-			rovers_InMission.insertSorted(Pair_rover_inMission);
+					available_Mountaneous_MissionList.enqueue(temp_ptr_mission);
+				}
+			}
+			else
+			{
+				available_Mountaneous_MissionList.dequeue(ptr_mission);
+				flag = false;
+			}
+			if (!flag)
+			{
+				EmergencyRovers* ptr_rover;
+				Pair<EmergencyRovers*, int> pair_rover;
+				pair_rover = emergency_Rovers_InMaintenance.getEntry(0);
+				emergency_Rovers_InMaintenance.remove(0);
+				ptr_rover = pair_rover.get_value();
+				// reducing speed to half
+				ptr_rover->setSpeed((ptr_rover->getSpeed() / 2));
+				//define that the rover didn't finish maintenance
+				ptr_rover->setFinishedMaintenance(false);
+				ptr_rover->setdaysInMaintenance(ptr_rover->getMaintenanceDuration());
+				// assigning mission to rover
+				ptr_rover->assignMission(ptr_mission);
+				// assigning Execution_Days
+				int days_Execution = (int)ceil(((2 * ptr_mission->get_Target_Location()) / (25 * ptr_rover->getSpeed())) + ptr_mission->get_Mission_Duration());
+				ptr_mission->set_Execution_Days(days_Execution);
+
+				// assigning completion days
+				int days_completion = 0;
+				if (ptr_mission->get_failed() == false)
+					days_completion = ptr_mission->get_Execution_Days() + ptr_mission->get_Waiting_Days() + ptr_mission->get_Formulation_Day();
+				else
+					days_completion = ptr_mission->get_Execution_Days() + ptr_mission->get_Waiting_Days() + ptr_mission->get_failed_day();
+
+				ptr_mission->set_Completion_Day(days_completion);
+
+
+				//putting mission in exceution
+				Pair<Mission*, int> Pair_mission_exceution(ptr_mission, ptr_mission->get_Completion_Day());
+				inExecution_MissionsList.insertSorted(Pair_mission_exceution);
+				// putting rover in execution
+				Pair<Rover*, int> Pair_rover_inMission(ptr_rover, ptr_mission->get_Completion_Day());
+				rovers_InMission.insertSorted(Pair_rover_inMission);
+			}
+			else
+				break;
 		}
 		else
 			break;
@@ -753,6 +983,7 @@ void MarsStation::autoPromote()
 			n_m->set_Waiting_Days(m->get_Waiting_Days());
 			n_m->set_failed(m->get_failed());
 			n_m->setAutoPromoted(true);
+			n_m->set_failed_day(m->get_failed_day());
 			Add_mission(n_m);
 			n_m = nullptr;
 		}
@@ -779,7 +1010,7 @@ void MarsStation::check_For_Failed_Missions()
 	Mission* m;
 	Rover* r;
 
-	while (i < inExecution_MissionsList.getLength())
+	while (i < inExecution_MissionsList.getLength() && inExecution_MissionsList.getLength() > 5)
 	{
 		Pair<Mission*, int>p1 = inExecution_MissionsList.getEntry(i);
 		m = p1.get_value();
@@ -787,8 +1018,9 @@ void MarsStation::check_For_Failed_Missions()
 		// There's a slim 2.5% chance the mission will fail, given the following:
 		/// 1. If it has not failed before.
 		/// 2. If the number of failed missions thus far relative to the total numer of missions does not exceed 0.1.
-		if (random < 0.025 && random > 0 && m->get_failed() == false && (float(numOfFailedMissions) / float(roughNumOfMissions) < 0.1))
+		if ((random < 0.1 && random > 0) && m->get_failed() == false && ((float(numOfFailedMissions) / float(roughNumOfMissions))< 0.1))
 		{
+			
 			//std::cout << "Mission " << m->get_ID() << " failed on day " << today << std::endl;
 			Pair<Rover*, int> p1 = rovers_InMission.getEntry(i);
 
@@ -803,6 +1035,7 @@ void MarsStation::check_For_Failed_Missions()
 			// Setting completion day, execution day and failed flag for the mission.
 			m->set_Completion_Day(0);
 			m->set_Execution_Days(0);
+			m->set_Waiting_Days(0);
 			m->set_failed(true);
 			m->set_failed_day(today);
 
@@ -827,11 +1060,16 @@ void MarsStation::check_For_Failed_Missions()
 			// Enqueuing the rover into checkup list.
 			//rovers_InCheckup
 			r->setdaysInCheckup(r->getCheckupD());
+
+
 			r->setCMforCheckup(0);
 			Pair<Rover*, int>pairForCheckup(r, r->getdaysInCheckup());
 			rovers_InCheckup.insertSorted(pairForCheckup);
 			
 			numOfFailedMissions++;
+			
+			// we break from the loop to make only one mission fail in one day to avoid failing of 11 missions in the same day
+			break;
 		}
 		i++;
 	}
@@ -1168,7 +1406,7 @@ void MarsStation::Promote_mission(int id)
 			n_t->set_Waiting_Days(t->get_Waiting_Days());
 			n_t->set_failed(t->get_failed());
 			n_t->setPromotedByEvent(true);
-			
+			n_t->set_failed_day(t->get_failed_day());
 			Add_mission(n_t);
 		}
 		else
@@ -1516,7 +1754,7 @@ void MarsStation::SaveOutputFile() {
 		if (total != 0)
 			// This is the number of autoPromoted missions relative to the total number of mountainous missions (Initially, only excluded those cancelled of course).
 			/// Thus this numOfMntM is ONLY decremented when cancelling a mountainous missions, not when promoting.
-			outputfile << "Auto-promoted = " << float(autoPromotedM) / float(numOfMntM) << "%" << endl;
+			outputfile << "Auto-promoted = " << float(autoPromotedM)*100 / float(numOfMntM) << "%" << endl;
 
 
 		outputfile << endl << endl;
