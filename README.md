@@ -205,7 +205,18 @@ program runs, it should ask the user to select the program mode.
 print an output like that shown below. In this mode, the program prints the current day then pauses
 for an input from the user (“Enter” key for example) to display the output of the next day.
 
-// TODO: add image here
+```
+Current Day: 78
+7 Waiting Missions: [11, 13] (6, 8) {9, 12, 14}
+----------------------------------------------------------------
+4 In-Execution Missions/Rovers: [2/1, 10/7] (3/5) {7/9}
+----------------------------------------------------------------
+4 Available Rovers: [4, 6] (10) {8}
+----------------------------------------------------------------
+2 In-Checkup Rovers: [2] {3}
+----------------------------------------------------------------
+3 Completed Missions: {5} [4] (1)
+```
 
 **Output Screen Explanation**
 
@@ -222,7 +233,11 @@ program w*aits for one second* (not for user input) then resumes automatically.
 3. *Silent Mode*, the program produces only an output file (See the “File Formats” section). It
 does not print any simulation steps on the console. It just prints the following screen
 
-// TODO: add image here
+```
+Silent Mode
+Simulation Starts...
+Simulation ends. Output file created
+```
 
 **NOTE**: No matter what mode of operation the program is running in, the output file should be
 produced.
